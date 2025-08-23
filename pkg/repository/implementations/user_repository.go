@@ -20,28 +20,15 @@ func (r *userRepository) Create(user *db.User) error {
 	return r.db.Create(user).Error
 }
 
-func (r *userRepository) CreateBatch(users []db.User) error {
-	if len(users) == 0 {
-		return nil
-	}
-	return r.db.Create(&users).Error
-}
-
 func (r *userRepository) GetByID(id uuid.UUID) (*db.User, error) {
 	var user db.User
-	err := r.db.First(&user, id).Error
-	return &user, err
-}
-
-func (r *userRepository) GetByEmail(email string) (*db.User, error) {
-	var user db.User
-	err := r.db.Where("email = ?", email).First(&user).Error
+	err := r.db.Preload("Role").First(&user, id).Error
 	return &user, err
 }
 
 func (r *userRepository) GetByUsername(username string) (*db.User, error) {
 	var user db.User
-	err := r.db.Where("username = ?", username).First(&user).Error
+	err := r.db.Preload("Role").Where("username = ?", username).First(&user).Error
 	return &user, err
 }
 

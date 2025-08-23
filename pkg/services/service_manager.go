@@ -7,19 +7,19 @@ import (
 )
 
 type Services struct {
-	Film *FilmService
-	User *UserService
-	Auth *AuthService
-	// Review *ReviewService
+	Article *ArticleService
+	User    *UserService
+	Auth    *AuthService
+	Role    *RoleService
 }
 
 func NewServices(db *gorm.DB) *Services {
 	repos := repository.NewRepositories(db)
 
 	return &Services{
-		Film: NewFilmService(repos),
-		User: NewUserService(repos),
-		Auth: NewAuthService(repos),
-		// Initialize other services here
+		Article: NewArticleService(repos),
+		User:    NewUserService(repos),
+		Auth:    NewAuthService(repos),
+		Role:    NewRoleService(repos),
 	}
 }
