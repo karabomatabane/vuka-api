@@ -1,11 +1,11 @@
 package routes
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
 	"vuka-api/pkg/controllers"
-	"vuka-api/pkg/httpx"
 	"vuka-api/pkg/middleware"
+
+	"github.com/gorilla/mux"
 )
 
 var RegisterUserRoutes = func(router *mux.Router) {
@@ -22,5 +22,5 @@ var RegisterUserRoutes = func(router *mux.Router) {
 	// Admin-only routes for user management
 	protectedRouter.HandleFunc("/user",
 		userController.GetAllUsers).
-		Methods(httpx.HTTP_GET)
+		Methods(http.MethodGet)
 }

@@ -46,8 +46,8 @@ func (r *articleRepository) GetAll() ([]db.Article, error) {
 	return articles, err
 }
 
-func (r *articleRepository) Update(article *db.Article) error {
-	return r.db.Save(article).Error
+func (r *articleRepository) Update(id uuid.UUID, updates map[string]any) error {
+	return r.db.Model(&db.Article{}).Where("id = ?", id).Updates(updates).Error
 }
 
 func (r *articleRepository) Delete(id uuid.UUID) error {

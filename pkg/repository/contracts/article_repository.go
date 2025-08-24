@@ -11,7 +11,7 @@ type ArticleRepository interface {
 	Create(article *db.Article) error
 	GetByID(id uuid.UUID) (*db.Article, error)
 	GetAll() ([]db.Article, error)
-	Update(article *db.Article) error
+	Update(id uuid.UUID, updates map[string]any) error
 	Delete(id uuid.UUID) error
 	GetByTitle(title string) (*db.Article, error)
 	GetWithRelations(id uuid.UUID) (*db.Article, error)

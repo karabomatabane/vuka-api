@@ -14,6 +14,7 @@ var RegisterRoleRoutes = func(router *mux.Router) {
 	roleRouter := router.PathPrefix("/role").Subrouter()
 	roleRouter.HandleFunc("", roleController.Create).
 		Methods(http.MethodPost)
+	roleRouter.HandleFunc("", roleController.GetAll)
 
 	// Protected routes (authentication required)
 	protectedRouter := roleRouter.PathPrefix("/").Subrouter()

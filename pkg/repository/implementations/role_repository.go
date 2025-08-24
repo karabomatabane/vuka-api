@@ -23,13 +23,13 @@ func (r *roleRepository) Update(role *db.Role) error {
 	return r.db.Save(role).Error
 }
 
-func (r *roleRepository) GetById(id string) (*db.Role, error) {
+func (r *roleRepository) GetById(id uuid.UUID) (*db.Role, error) {
 	var role db.Role
 	err := r.db.First(&role, id).Error
 	return &role, err
 }
 
-func (r *roleRepository) GetWithPermissions(id string) (*db.Role, error) {
+func (r *roleRepository) GetWithPermissions(id uuid.UUID) (*db.Role, error) {
 	var role db.Role
 	err := r.db.Preload("Permissions").First(&role, id).Error
 	return &role, err

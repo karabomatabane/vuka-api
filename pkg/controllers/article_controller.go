@@ -7,7 +7,6 @@ import (
 	"vuka-api/pkg/models/db"
 	"vuka-api/pkg/services"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
@@ -26,13 +25,7 @@ func (fc *ArticleController) GetArticle(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 
-	articleID, err := uuid.Parse(vars["id"])
-	if err != nil {
-		httpx.WriteErrorJSON(w, "Invalid article ID", http.StatusBadRequest)
-		return
-	}
-
-	article, err := fc.articleService.GetArticleByID(articleID)
+	article, err := fc.articleService.GetArticleByID(vars["id"])
 	if err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -55,54 +48,29 @@ func (fc *ArticleController) GetAllArticles(w http.ResponseWriter, r *http.Reque
 
 func (fc *ArticleController) UpdateArticle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-
-	articleID, err := uuid.Parse(vars["id"])
+	_, err := fc.articleService.GetArticleByID(vars["id"])
 	if err != nil {
-		httpx.WriteErrorJSON(w, "Invalid article ID", http.StatusBadRequest)
+		httpx.WriteErrorJSON(w, "Article ID does not exist", http.StatusBadRequest)
 		return
 	}
 
-	// Get existing article
-	existingArticle, err := fc.articleService.GetArticleByID(articleID)
-	if err != nil {
-		httpx.WriteErrorJSON(w, "Article not found", http.StatusNotFound)
-		return
-	}
-
-	// Parse request body for updates
-	var updates db.Article
-	if err = httpx.ParseBody(r, &updates); err != nil {
+	updates := make(map[string]any)
+	if err := httpx.ParseBody(r, &updates); err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	// Update fields
-	updates.ID = existingArticle.ID
-	if err = fc.articleService.UpdateArticle(&updates); err != nil {
-		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Return updated article
-	updatedArticle, err := fc.articleService.GetArticleByID(articleID)
+	updatedArticle, err := fc.articleService.UpdateArticle(vars["id"], updates)
 	if err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	httpx.WriteJSON(w, http.StatusOK, updatedArticle)
 }
 
 func (fc *ArticleController) DeleteArticle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	articleID, err := uuid.Parse(vars["id"])
-	if err != nil {
-		httpx.WriteErrorJSON(w, "Invalid article ID", http.StatusBadRequest)
-		return
-	}
-
-	if err = fc.articleService.DeleteArticle(articleID); err != nil {
+	if err := fc.articleService.DeleteArticle(vars["id"]); err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -49,7 +49,7 @@ func GetFromTmdb(url string) (*http.Response, error) {
 	if token == "" {
 		return nil, fmt.Errorf("TMDB_ACCESS_TOKEN not set")
 	}
-	req, err := http.NewRequest(HTTP_GET, url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
