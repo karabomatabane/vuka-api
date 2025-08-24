@@ -47,9 +47,13 @@ func (s *AuthService) Register(body models.RegisterBody) (*models.AuthResponse, 
 	if err != nil {
 		return nil, err
 	}
+	dbUserWithRole, err := s.repos.User.GetByID(dbUser.ID)
+	if err != nil {
+		return nil, err
+	}
 	user := models.AuthResponse{
-		Username:    dbUser.Username,
-		Role:        dbUser.Role.Name,
+		Username:    dbUserWithRole.Username,
+		Role:        dbUserWithRole.Role.Name,
 		AccessToken: token,
 	}
 	return &user, nil

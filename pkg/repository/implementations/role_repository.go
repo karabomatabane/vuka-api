@@ -31,7 +31,10 @@ func (r *roleRepository) GetById(id uuid.UUID) (*db.Role, error) {
 
 func (r *roleRepository) GetWithPermissions(id uuid.UUID) (*db.Role, error) {
 	var role db.Role
-	err := r.db.Preload("Permissions").First(&role, id).Error
+
+	err := r.db.Preload("RoleSectionPermissions.Permission").
+		Preload("RoleSectionPermissions.Section").
+		First(&role, id).Error
 	return &role, err
 }
 

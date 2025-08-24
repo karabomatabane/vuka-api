@@ -1,9 +1,10 @@
 package models
 
 type RegisterBody struct {
-	Username string `json:"username" validate:"required, min=3"`
-	Password string `json:"password" validate:"required,min=6"`
-	RoleID   string `json:"roleId" validate:"required"`
+	Username        string `json:"username" validate:"required,min=3"`
+	Password        string `json:"password" validate:"required,min=6"`
+	ConfirmPassword string `json:"confirmPassword" validate:"required"`
+	RoleID          string `json:"roleId" validate:"required"`
 }
 
 type LoginBody struct {

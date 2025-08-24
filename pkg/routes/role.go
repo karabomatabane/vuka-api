@@ -15,6 +15,10 @@ var RegisterRoleRoutes = func(router *mux.Router) {
 	roleRouter.HandleFunc("", roleController.Create).
 		Methods(http.MethodPost)
 	roleRouter.HandleFunc("", roleController.GetAll)
+	roleRouter.HandleFunc("/{id}", roleController.GetById).
+		Methods(http.MethodGet)
+	roleRouter.HandleFunc("/{id}/permissions", roleController.GetWithPermissions).
+		Methods(http.MethodGet)
 
 	// Protected routes (authentication required)
 	protectedRouter := roleRouter.PathPrefix("/").Subrouter()
@@ -23,7 +27,9 @@ var RegisterRoleRoutes = func(router *mux.Router) {
 			next.ServeHTTP(w, r)
 		})
 	})
-
 	// Admin-only routes for role management
-
+	protectedRouter.HandleFunc("/{id}", roleController.Update).
+		Methods(http.MethodPatch)
+	protectedRouter.HandleFunc("/{id}", roleController.Delete).
+		Methods(http.MethodDelete)
 }

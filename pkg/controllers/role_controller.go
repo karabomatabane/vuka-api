@@ -36,7 +36,7 @@ func (c *RoleController) Create(w http.ResponseWriter, r *http.Request) {
 	httpx.WriteJSON(w, http.StatusOK, role)
 }
 
-func (c *RoleController) GetAll(w http.ResponseWriter, r *http.Request) {
+func (c *RoleController) GetAll(w http.ResponseWriter, _ *http.Request) {
 	roles, err := c.roleService.GetAll()
 	if err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
@@ -65,7 +65,7 @@ func (c *RoleController) GetWithPermissions(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	httpx.WriteJSON(w, http.StatusOK, role)
+	httpx.WriteJSON(w, http.StatusOK, role.ToDomain())
 }
 
 func (c *RoleController) Update(w http.ResponseWriter, r *http.Request) {
