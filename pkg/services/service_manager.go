@@ -11,6 +11,7 @@ type Services struct {
 	User    *UserService
 	Auth    *AuthService
 	Role    *RoleService
+	Rss     *RssService
 }
 
 func NewServices(db *gorm.DB) *Services {
@@ -21,5 +22,6 @@ func NewServices(db *gorm.DB) *Services {
 		User:    NewUserService(repos),
 		Auth:    NewAuthService(repos),
 		Role:    NewRoleService(repos),
+		Rss:     NewRssService(),
 	}
 }

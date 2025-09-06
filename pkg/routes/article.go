@@ -16,6 +16,8 @@ var RegisterArticleRoutes = func(router *mux.Router) {
 		Methods(http.MethodGet)
 	articleRouter.HandleFunc("/{id}", articleController.GetArticle).
 		Methods(http.MethodGet)
+	articleRouter.HandleFunc("/rss", articleController.CreateFromRssFeed).
+		Methods(http.MethodPost)
 
 	// Protected routes (authentication required)
 	protectedRouter := articleRouter.PathPrefix("/").Subrouter()

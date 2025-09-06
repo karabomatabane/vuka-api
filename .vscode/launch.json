@@ -11,7 +11,6 @@
       "args": []
     },
     {
-      "name": "Test Current File",
       "type": "go",
       "request": "launch",
       "mode": "test",

@@ -12,12 +12,14 @@ import (
 
 type ArticleController struct {
 	articleService *services.ArticleService
+	rssService *services.RssService
 }
 
 func NewArticleController() *ArticleController {
 	serviceManager := services.NewServices(config.GetDB())
 	return &ArticleController{
 		articleService: serviceManager.Article,
+		rssService: serviceManager.Rss,
 	}
 }
 
@@ -91,4 +93,16 @@ func (fc *ArticleController) CreateArticle(w http.ResponseWriter, r *http.Reques
 	}
 
 	httpx.WriteJSON(w, http.StatusOK, article)
+}
+
+func (fc *ArticleController) CreateFromRssFeed(w http.ResponseWriter, r *http.Request) {
+	type RssBody struct {
+		Url string `json:"url"`
+	}
+	body := RssBody{}
+	if err := httpx.ParseBody(r, &body); err != nil {
+		httpx.WriteErrorJSON(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	fc.rssService.IngestRSSFeed(body.Url)
 }
