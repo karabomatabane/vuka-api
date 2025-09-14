@@ -11,6 +11,7 @@ type Repositories struct {
 	Article contracts.ArticleRepository
 	User    contracts.UserRepository
 	Role    contracts.RoleRepository
+	Source  contracts.SourceRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
@@ -18,5 +19,6 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Article: implementations.NewArticleRepository(db),
 		User:    implementations.NewUserRepository(db),
 		Role:    implementations.NewRoleRepository(db),
+		Source:  implementations.NewSourceRepository(db),
 	}
 }
