@@ -60,8 +60,20 @@ func main() {
 	routes.RegisterSourceRoutes(router)
 
 	// Migrate sources from CSV on startup
-	serviceManager := services.NewServices(config.GetDB())
-	MigrateSources(serviceManager.Source, "bin/sources.csv")
+	// serviceManager := services.NewServices(config.GetDB())
+	// MigrateSources(serviceManager.Source, "bin/sources.csv")
+
+	// // Setup and start cron jobs
+	// cronService := serviceManager.Cron
+
+	// // Schedule RSS ingestion to run every hour
+	// if err := cronService.ScheduleRSSIngestion(); err != nil {
+	// 	log.Printf("Failed to schedule RSS ingestion: %v", err)
+	// }
+
+	// // Start the cron service
+	// cronService.Start()
+	// log.Println("Cron service started - RSS feeds will be ingested hourly")
 
 	http.Handle("/", router)
 	listeningAddr := fmt.Sprintf("localhost:%v", os.Getenv("PORT"))

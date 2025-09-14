@@ -64,6 +64,22 @@ func (r *articleRepository) GetByTitle(title string) (*db.Article, error) {
 	return &article, err
 }
 
+func (r *articleRepository) GetByOriginalUrl(url string) (*db.Article, error) {
+	var article db.Article
+	err := r.db.Preload("Source").
+		Preload("Region").
+		Preload("Categories").
+		Where("original_url = ?", url).
+		First(&article).Error
+	return &article, err
+}
+
+func (r *articleRepository) ExistsByOriginalUrl(url string) (bool, error) {
+	var count int64
+	err := r.db.Model(&db.Article{}).Where("original_url = ?", url).Count(&count).Error
+	return count > 0, err
+}
+
 func (r *articleRepository) GetWithRelations(id uuid.UUID) (*db.Article, error) {
 	var article db.Article
 	err := r.db.Preload("Source").

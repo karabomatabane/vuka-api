@@ -7,8 +7,8 @@ import (
 )
 
 func init() {
-	//config.LoadEnvVariables()
-	//config.Connect()
+	config.LoadEnvVariables()
+	config.Connect()
 }
 
 // Run to create the tables in the database

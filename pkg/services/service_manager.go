@@ -13,17 +13,23 @@ type Services struct {
 	Role    *RoleService
 	Rss     *RssService
 	Source  *SourceService
+	Cron    *CronService
 }
 
 func NewServices(db *gorm.DB) *Services {
 	repos := repository.NewRepositories(db)
 
+	articleService := NewArticleService(repos)
+	sourceService := NewSourceService(repos)
+	rssService := NewRssService(articleService)
+
 	return &Services{
-		Article: NewArticleService(repos),
+		Article: articleService,
 		User:    NewUserService(repos),
 		Auth:    NewAuthService(repos),
 		Role:    NewRoleService(repos),
-		Rss:     NewRssService(),
-		Source:  NewSourceService(repos),
+		Rss:     rssService,
+		Source:  sourceService,
+		Cron:    NewCronService(rssService, sourceService),
 	}
 }

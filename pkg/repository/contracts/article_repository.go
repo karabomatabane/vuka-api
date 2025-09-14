@@ -14,9 +14,11 @@ type ArticleRepository interface {
 	Update(id uuid.UUID, updates map[string]any) error
 	Delete(id uuid.UUID) error
 	GetByTitle(title string) (*db.Article, error)
+	GetByOriginalUrl(url string) (*db.Article, error)
 	GetWithRelations(id uuid.UUID) (*db.Article, error)
 	GetAllWithRelations() ([]db.Article, error)
 	CreateWithTransaction(tx *gorm.DB, article *db.Article) error
 	CreateWithAssociations(article *db.Article) error
 	CreateWithAssociationsAndTransaction(tx *gorm.DB, article *db.Article) error
+	ExistsByOriginalUrl(url string) (bool, error)
 }
