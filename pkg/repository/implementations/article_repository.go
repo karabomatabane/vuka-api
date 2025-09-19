@@ -91,11 +91,8 @@ func (r *articleRepository) GetWithRelations(id uuid.UUID) (*db.Article, error) 
 
 func (r *articleRepository) GetAllWithRelations() ([]db.Article, error) {
 	var articles []db.Article
-	err := r.db.Preload("Genres").
-		Preload("Directors").
-		Preload("Cast").
-		Preload("Reviews").
-		Preload("Reviews.User").
+	err := r.db.Preload("Source").
+		Preload("Region").
 		Find(&articles).Error
 	return articles, err
 }

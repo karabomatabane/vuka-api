@@ -48,7 +48,7 @@ func (s *ArticleService) GetArticleByID(id string) (*db.Article, error) {
 }
 
 func (s *ArticleService) GetAllArticles() ([]db.Article, error) {
-	return s.repos.Article.GetAll()
+	return s.repos.Article.GetAllWithRelations()
 }
 
 func (s *ArticleService) UpdateArticle(id string, updates map[string]any) (*db.Article, error) {

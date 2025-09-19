@@ -12,6 +12,7 @@ import (
 	"vuka-api/pkg/services"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 func init() {
@@ -68,15 +69,25 @@ func main() {
 
 	// // Schedule RSS ingestion to run every hour
 	// if err := cronService.ScheduleRSSIngestion(); err != nil {
-	// 	log.Printf("Failed to schedule RSS ingestion: %v", err)
+	//     log.Printf("Failed to schedule RSS ingestion: %v", err)
 	// }
 
 	// // Start the cron service
 	// cronService.Start()
 	// log.Println("Cron service started - RSS feeds will be ingested hourly")
 
-	http.Handle("/", router)
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:4200"},
+
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+
+		AllowedHeaders: []string{"Content-Type", "Authorization"},
+
+		// Allow cookies and credentials to be sent.
+		AllowCredentials: true,
+	})
+
 	listeningAddr := fmt.Sprintf("localhost:%v", os.Getenv("PORT"))
 	log.Printf("Server is running on %s", listeningAddr)
-	log.Fatal(http.ListenAndServe(listeningAddr, router))
+	log.Fatal(http.ListenAndServe(listeningAddr, c.Handler(router)))
 }
