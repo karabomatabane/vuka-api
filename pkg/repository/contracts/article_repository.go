@@ -21,4 +21,5 @@ type ArticleRepository interface {
 	CreateWithAssociations(article *db.Article) error
 	CreateWithAssociationsAndTransaction(tx *gorm.DB, article *db.Article) error
 	ExistsByOriginalUrl(url string) (bool, error)
+	SetCategories(article *db.Article, categories []db.Category) error
 }

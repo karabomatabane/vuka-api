@@ -1,10 +1,11 @@
-import { Component, computed, Input } from '@angular/core';
+import { Component, computed, Input, inject } from '@angular/core';
 import { signal } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { AuthenticationService } from 'src/app/_services/auth.service';
 
 export type MenuItem = {
   icon: string;
@@ -27,6 +28,11 @@ export type MenuItem = {
   styleUrls: ['./x-sidenav.component.scss'],
 })
 export class XSidenavComponent {
+  private authService = inject(AuthenticationService);
+  private router = inject(Router);
+
+  currentUser = this.authService.currentUser;
+
   sideNavCollapsed = signal(false);
   @Input() set collapsed(val: boolean) {
     this.sideNavCollapsed.set(val);
@@ -34,15 +40,26 @@ export class XSidenavComponent {
 
   profilePicSize = computed(() => (this.sideNavCollapsed() ? '32' : '100'));
 
-  menuItems = signal<MenuItem[]>([
-    { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
-    { icon: 'newsstand', label: 'Articles', route: '/articles' },
-    { icon: 'home_storage', label: 'Sources', route: '/sources' },
-    { icon: 'folder', label: 'Directories', route: '/directories' },
-    {
-      icon: 'security',
-      label: 'Roles & Permissions',
-      route: '/roles-and-permissions',
-    },
-  ]);
+  menuItems = computed(() => {
+    if (this.currentUser()) {
+      return [
+        { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
+        { icon: 'newsstand', label: 'Articles', route: '/articles' },
+        { icon: 'home_storage', label: 'Sources', route: '/sources' },
+        { icon: 'folder', label: 'Directories', route: '/directories' },
+        {
+          icon: 'security',
+          label: 'Roles & Permissions',
+          route: '/roles-and-permissions',
+        },
+      ];
+    } else {
+      return [{ icon: 'login', label: 'Login', route: '/login' }];
+    }
+  });
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }

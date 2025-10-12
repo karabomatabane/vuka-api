@@ -2,36 +2,12 @@
 @use "@angular/material" as mat;
 @include mat.core();
 
-html,
-body {
-  height: 100%;
-}
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  --primary-color: #499d23;
-}
-
-.spacer {
-  flex: 1 1 auto;
-}
-
-.sidenav-collapsed {
-  a[mat-list-item] .mat-list-item-content {
-    justify-content: center;
-  }
-
-  .mat-drawer-inner-container {
-    overflow: hidden;
-  }
-}
-
-a {
-  text-decoration: none;
-}
-
-.filledIcon {
-  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+:root {
+  @include mat.snack-bar-overrides((
+    container-color: #fcf9f6,
+    button-color: #ba1a1a,
+    supporting-text-color: #1c1c1b,
+  ));
 }
 
 $mat-primary: (
@@ -79,6 +55,12 @@ $my-dark-theme: mat.m2-define-dark-theme((
 // Apply the dark theme by adding the `.dark-theme` class to the `body` element.
 body.dark-theme {
   @include mat.all-component-colors($my-dark-theme);
+
+  @include mat.snack-bar-overrides((
+    container-color: #131312,
+    button-color: #ffb4ab,
+    supporting-text-color: #e5e2e0,
+  ));
 }
 
 @layer view-transitions {
@@ -89,12 +71,67 @@ body.dark-theme {
 }
 
 /* Table link styles */
-.mat-mdc-table td a {
+a {
   color: inherit;
   text-decoration: none;
   font-weight: bold;
 }
 
-.mat-mdc-table td a:hover {
+a:hover {
   text-decoration: underline;
+  cursor: pointer;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  --primary-color: #499d23;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.sidenav-collapsed {
+  a[mat-list-item] .mat-list-item-content {
+    justify-content: center;
+  }
+
+  .mat-drawer-inner-container {
+    overflow: hidden;
+  }
+}
+
+a {
+  text-decoration: none;
+}
+
+.filledIcon {
+  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.centre {
+  display: flex;
+  justify-content: center;
+}
+
+.margin-top {
+  margin-top: 16px;
+}
+
+.snack-bar-container {
+  margin-left: 250px !important;
+}
+
+body.sidenav-collapsed .snack-bar-container {
+  margin-left: 65px !important;
+}
+
+.table-container, .table-wrapper {
+  margin-bottom: 16px !important;
+  border-radius: 18px !important;
 }

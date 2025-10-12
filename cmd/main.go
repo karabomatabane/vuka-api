@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"vuka-api/pkg/config"
+	"vuka-api/pkg/controllers"
 	"vuka-api/pkg/models/db"
 	"vuka-api/pkg/routes"
 	"vuka-api/pkg/services"
@@ -54,27 +55,31 @@ func MigrateSources(service *services.SourceService, csvPath string) {
 
 func main() {
 	router := mux.NewRouter()
+	serviceManager := services.NewServices(config.GetDB())
+
 	routes.RegisterAuthRoutes(router)
 	routes.RegisterUserRoutes(router)
 	routes.RegisterArticleRoutes(router)
 	routes.RegisterRoleRoutes(router)
 	routes.RegisterSourceRoutes(router)
 
+	categoryController := controllers.NewCategoryController(serviceManager.Category)
+	routes.RegisterCategoryRoutes(router, categoryController)
+
 	// Migrate sources from CSV on startup
-	// serviceManager := services.NewServices(config.GetDB())
 	// MigrateSources(serviceManager.Source, "bin/sources.csv")
 
-	// // Setup and start cron jobs
-	// cronService := serviceManager.Cron
+	// Setup and start cron jobs
+	cronService := serviceManager.Cron
 
-	// // Schedule RSS ingestion to run every hour
-	// if err := cronService.ScheduleRSSIngestion(); err != nil {
-	//     log.Printf("Failed to schedule RSS ingestion: %v", err)
-	// }
+	// Schedule RSS ingestion to run every hour
+	if err := cronService.ScheduleRSSIngestion(); err != nil {
+	    log.Printf("Failed to schedule RSS ingestion: %v", err)
+	}
 
-	// // Start the cron service
-	// cronService.Start()
-	// log.Println("Cron service started - RSS feeds will be ingested hourly")
+	// Start the cron service
+	cronService.Start()
+	log.Println("Cron service started - RSS feeds will be ingested hourly")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:4200"},

@@ -23,14 +23,14 @@ type Channel struct {
 
 // An item represents a single article or post in the feed
 type Item struct {
-	XMLName     xml.Name  `xml:"item"`
-	Title       string    `xml:"title"`
-	Link        string    `xml:"link"`
-	Description string    `xml:"description"`
-	GUID        string    `xml:"guid"`
-	Author      string    `xml:"author"`
-	PubDate     string    `xml:"pubDate"` // You might want to parse this into a time.Time later
-	Category    string    `xml:"category"`
+	XMLName     xml.Name `xml:"item"`
+	Title       string   `xml:"title"`
+	Link        string   `xml:"link"`
+	Description string   `xml:"description"`
+	GUID        string   `xml:"guid"`
+	Author      string   `xml:"author"`
+	PubDate     string   `xml:"pubDate"` // You might want to parse this into a time.Time later
+	Categories  []string `xml:"category"`
 }
 
 func (feed *Item) ToArticle() (*db.Article, error) {

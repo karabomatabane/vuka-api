@@ -42,6 +42,7 @@ func (ac *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 	authResponse, err := ac.authService.Register(body)
 	if err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	httpx.WriteJSON(w, http.StatusCreated, authResponse)
@@ -63,6 +64,7 @@ func (ac *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 	authResponse, err := ac.authService.Login(body)
 	if err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	httpx.WriteJSON(w, http.StatusOK, authResponse)

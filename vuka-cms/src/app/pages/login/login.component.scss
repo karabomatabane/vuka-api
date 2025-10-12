@@ -1,0 +1,21 @@
+.login-container {
+  display: block;
+  max-width: 300px;
+  margin: auto;
+
+  background-color: #eceff1;
+  padding: 48px;
+  border-radius: 16px;
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  :host-context(body.dark-theme) & {
+    background-color: #424242;
+  }
+}

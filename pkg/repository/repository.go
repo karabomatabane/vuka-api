@@ -8,17 +8,19 @@ import (
 )
 
 type Repositories struct {
-	Article contracts.ArticleRepository
-	User    contracts.UserRepository
-	Role    contracts.RoleRepository
-	Source  contracts.SourceRepository
+	Article  contracts.ArticleRepository
+	User     contracts.UserRepository
+	Role     contracts.RoleRepository
+	Source   contracts.SourceRepository
+	Category contracts.CategoryRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
 	return &Repositories{
-		Article: implementations.NewArticleRepository(db),
-		User:    implementations.NewUserRepository(db),
-		Role:    implementations.NewRoleRepository(db),
-		Source:  implementations.NewSourceRepository(db),
+		Article:  implementations.NewArticleRepository(db),
+		User:     implementations.NewUserRepository(db),
+		Role:     implementations.NewRoleRepository(db),
+		Source:   implementations.NewSourceRepository(db),
+		Category: implementations.NewCategoryRepository(db),
 	}
 }

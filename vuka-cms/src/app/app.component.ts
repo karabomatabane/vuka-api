@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, effect } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [
     RouterOutlet,
     MatToolbarModule,
@@ -30,6 +31,14 @@ export class AppComponent {
   constructor(private titleService: Title) {
     this.titleService.setTitle(this.title);
     document.body.classList.add('dark-theme');
+
+    effect(() => {
+      if (this.collapsed()) {
+        document.body.classList.add('sidenav-collapsed');
+      } else {
+        document.body.classList.remove('sidenav-collapsed');
+      }
+    });
   }
 
   sidebarWidth = computed(() => (this.collapsed() ? '65px' : '250px'));

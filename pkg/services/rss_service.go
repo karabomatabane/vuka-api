@@ -7,17 +7,20 @@ import (
 	"log"
 	"net/http"
 	"vuka-api/pkg/models"
+	"vuka-api/pkg/models/db"
 
 	"github.com/google/uuid"
 )
 
 type RssService struct {
-	articleService *ArticleService
+	articleService  *ArticleService
+	categoryService *CategoryService
 }
 
-func NewRssService(articleService *ArticleService) *RssService {
+func NewRssService(articleService *ArticleService, categoryService *CategoryService) *RssService {
 	return &RssService{
-		articleService: articleService,
+		articleService:  articleService,
+		categoryService: categoryService,
 	}
 }
 
@@ -71,6 +74,23 @@ func (s *RssService) IngestRSSFeedWithSource(url string, sourceID *uuid.UUID) er
 		if created {
 			fmt.Printf("Successfully saved article: %s\n", article.Title)
 			savedCount++
+
+			// Find or create categories and associate them with the article
+			var categories []db.Category
+			for _, categoryName := range item.Categories {
+				category, err := s.categoryService.FindOrCreate(categoryName)
+				if err != nil {
+					log.Printf("Failed to find or create category '%s': %v", categoryName, err)
+					continue
+				}
+				categories = append(categories, *category)
+			}
+
+			if len(categories) > 0 {
+				if err := s.articleService.SetArticleCategories(article, categories); err != nil {
+					log.Printf("Failed to set categories for article '%s': %v", article.Title, err)
+				}
+			}
 		} else {
 			log.Printf("Article already exists, skipping: %s", article.Title)
 			duplicateCount++

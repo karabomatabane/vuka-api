@@ -9,6 +9,9 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ArticleService } from 'src/app/_services/article.service';
 import { Article } from 'src/app/_models/article.model';
+import { CategoryService } from 'src/app/_services/category.service';
+import { Category } from 'src/app/_models/category.model';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-article-edit',
@@ -21,6 +24,7 @@ import { Article } from 'src/app/_models/article.model';
     MatButtonModule,
     MatSlideToggleModule,
     MatProgressSpinnerModule,
+    MatSelectModule,
   ],
   templateUrl: './article-edit.component.html',
   styleUrls: ['./article-edit.component.scss'],
@@ -30,11 +34,13 @@ export class ArticleEditComponent implements OnInit {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private articleService = inject(ArticleService);
+  private categoryService = inject(CategoryService);
 
   article: Article | undefined;
   editForm!: FormGroup;
   isLoading = true;
   articleId!: string;
+  categories: Category[] = [];
 
   ngOnInit() {
     this.articleId = this.route.snapshot.paramMap.get('id')!;
@@ -42,12 +48,20 @@ export class ArticleEditComponent implements OnInit {
       title: ['', Validators.required],
       contentBody: ['', Validators.required],
       isFeatured: [false],
+      categoryIds: [[]],
+    });
+
+    this.categoryService.getCategories().subscribe((data) => {
+      this.categories = data;
     });
 
     if (this.articleId) {
       this.articleService.getArticleById(this.articleId).subscribe((data) => {
         this.article = data as Article;
-        this.editForm.patchValue(this.article);
+        this.editForm.patchValue({
+          ...this.article,
+          categoryIds: this.article.categories?.map((c) => c.id) || [],
+        });
         this.isLoading = false;
       });
     }
@@ -57,9 +71,11 @@ export class ArticleEditComponent implements OnInit {
     if (this.editForm.valid) {
       this.isLoading = true;
       const updatedArticle = { ...this.article, ...this.editForm.value };
-      this.articleService.updateArticle(this.articleId, updatedArticle).subscribe(() => {
-        this.router.navigate(['/articles', this.articleId]);
-      });
+      this.articleService
+        .updateArticle(this.articleId, updatedArticle)
+        .subscribe(() => {
+          this.router.navigate(['/articles', this.articleId]);
+        });
     }
   }
 

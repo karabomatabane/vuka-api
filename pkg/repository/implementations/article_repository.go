@@ -46,6 +46,15 @@ func (r *articleRepository) GetAll() ([]db.Article, error) {
 	return articles, err
 }
 
+func (r *articleRepository) GetAllWithRelations() ([]db.Article, error) {
+	var articles []db.Article
+	err := r.db.Preload("Source").
+		Preload("Region").
+		Preload("Categories").
+		Find(&articles).Error
+	return articles, err
+}
+
 func (r *articleRepository) Update(id uuid.UUID, updates map[string]any) error {
 	return r.db.Model(&db.Article{}).Where("id = ?", id).Updates(updates).Error
 }
@@ -89,10 +98,6 @@ func (r *articleRepository) GetWithRelations(id uuid.UUID) (*db.Article, error) 
 	return &article, err
 }
 
-func (r *articleRepository) GetAllWithRelations() ([]db.Article, error) {
-	var articles []db.Article
-	err := r.db.Preload("Source").
-		Preload("Region").
-		Find(&articles).Error
-	return articles, err
+func (r *articleRepository) SetCategories(article *db.Article, categories []db.Category) error {
+	return r.db.Model(article).Association("Categories").Replace(categories)
 }

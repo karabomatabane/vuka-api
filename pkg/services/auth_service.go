@@ -62,7 +62,8 @@ func (s *AuthService) Register(body models.RegisterBody) (*models.AuthResponse, 
 func (s *AuthService) Login(body models.LoginBody) (*models.AuthResponse, error) {
 	dbUser, err := s.repos.User.GetByUsername(body.Username)
 	if err != nil {
-		return nil, err
+		// TODO: Return err for reporting, then controller will send errors.New(httpx.InvalidCredentials) to client
+		return nil, errors.New(httpx.InvalidCredentials)
 	}
 	if dbUser == nil {
 		return nil, errors.New(httpx.InvalidCredentials)
@@ -76,7 +77,7 @@ func (s *AuthService) Login(body models.LoginBody) (*models.AuthResponse, error)
 
 	token, err := utils.GenerateTokenString(dbUser.ID, dbUser.RoleID, time.Now().Add(time.Hour*24))
 	if err != nil {
-		return nil, err
+		return nil, errors.New(httpx.InvalidCredentials)
 	}
 	user := models.AuthResponse{
 		Username:    dbUser.Username,
