@@ -1,0 +1,18 @@
+<mat-toolbar class="mat-elevation-z3">
+  <button mat-icon-button (click)="collapsed.set(!collapsed())">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span class="app-title">Vuka CMS</span>
+  <span class="spacer"></span>
+  <button mat-icon-button (click)="toggleTheme()" [matTooltip]="'Switch to ' + (isDarkTheme() ? 'light' : 'dark') + ' theme'">
+    <mat-icon>{{ isDarkTheme() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+</mat-toolbar>
+<mat-sidenav-container>
+  <mat-sidenav opened mode="side" [style.width]="sidebarWidth()" [class.sidenav-collapsed]="collapsed()">
+    <app-x-sidenav [collapsed]="collapsed()"></app-x-sidenav>
+  </mat-sidenav>
+  <mat-sidenav-content class="content" [style.margin-left]="sidebarWidth()">
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

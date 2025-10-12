@@ -1,0 +1,38 @@
+.details-container {
+  padding: 20px;
+}
+
+.actions-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.back-button {
+  margin-bottom: 20px;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+mat-card-subtitle {
+  display: flex;
+  align-items: center;
+}
+
+.separator {
+  margin: 0 8px;
+}
+
+mat-card-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+mat-card-title a:hover {
+  text-decoration: underline;
+}

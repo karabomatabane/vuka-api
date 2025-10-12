@@ -1,0 +1,34 @@
+<div class="details-container">
+  <div class="actions-container">
+    <a mat-flat-button routerLink="/articles" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+      <span>Back to Articles</span>
+    </a>
+    <button mat-flat-button color="primary" (click)="goToEdit()">
+      <mat-icon>edit</mat-icon>
+      <span>Edit Article</span>
+    </button>
+  </div>
+
+  <div *ngIf="isLoading" class="spinner-container">
+    <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
+  </div>
+
+  <div *ngIf="!isLoading && article">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          <a [href]="article.originalUrl" target="_blank" rel="noopener noreferrer">{{ article.title }}</a>
+        </mat-card-title>
+        <mat-card-subtitle>
+          <span>{{ article.source.name }}</span>
+          <span class="separator">|</span>
+          <span>{{ article.publishedAt | date:'longDate' }}</span>
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div [innerHTML]="article.contentBody"></div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
