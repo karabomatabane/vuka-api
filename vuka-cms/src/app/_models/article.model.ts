@@ -1,25 +1,17 @@
-export interface Article {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
+import { BaseModel } from './base.model';
+import { Category } from './category.model';
+import { Region } from './region.model';
+import { Source } from './source.model';
+
+export interface Article extends BaseModel {
   title: string;
   originalUrl: string;
   contentBody: string;
   publishedAt: string;
   isFeatured: boolean;
   sourceId: string;
-  source: {
-    id: string;
-    name: string;
-    websiteUrl: string;
-    rssFeedUrl: string;
-  };
+  source: Source;
   regionID: string | null;
-  region: {
-    id: string;
-    name: string;
-    slug: string;
-  };
-  Categories: any[] | null; // Replace 'any' with a proper Category interface if available
+  region: Region;
+  categories: Category[] | null;
 }

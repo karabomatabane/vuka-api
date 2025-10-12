@@ -1,7 +1,52 @@
+.articles-container {
+  padding: 20px;
+}
+
+.filter-field {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.table-container {
+  position: relative;
+}
+
+.spinner-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 2;
+}
+
+.table-wrapper {
+  overflow: auto;
+}
+
+.no-data-cell {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: grey;
+}
+
 .article-row {
   cursor: pointer;
 }
 
 .article-row:hover {
   background-color: rgba(0, 0, 0, 0.04);
+}
+
+.featured-icon-filled {
+  color: #ffc107; /* Or your preferred star color */
+}
+
+.featured-icon-outline {
+  color: #b0b0b0; /* Or a lighter color for non-featured */
 }

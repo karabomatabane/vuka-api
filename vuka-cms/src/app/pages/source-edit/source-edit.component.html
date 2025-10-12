@@ -1,0 +1,29 @@
+<div class="edit-container">
+  <h1>{{ isNew ? 'Add' : 'Edit' }} Source</h1>
+
+  <div *ngIf="isLoading" class="spinner-container">
+    <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
+  </div>
+
+  <form [formGroup]="editForm" (ngSubmit)="save()" *ngIf="!isLoading">
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Website URL</mat-label>
+      <input matInput formControlName="websiteUrl">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>RSS Feed URL</mat-label>
+      <input matInput formControlName="rssFeedUrl">
+    </mat-form-field>
+
+    <div class="form-actions">
+      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="!editForm.valid">Save</button>
+    </div>
+  </form>
+</div>

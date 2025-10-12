@@ -20,6 +20,8 @@
     routerLinkActive="selected-menu-item"
     #rla="routerLinkActive"
     [activated]="rla.isActive"
+    [matTooltip]="item.label"
+    [matTooltipDisabled]="!sideNavCollapsed()"
   >
     <mat-icon
       matListItemIcon
