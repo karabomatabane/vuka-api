@@ -50,6 +50,7 @@ func (r *articleRepository) GetAllWithRelations() ([]db.Article, error) {
 	var articles []db.Article
 	err := r.db.Preload("Source").
 		Preload("Region").
+		Preload("Images").
 		Preload("Categories").
 		Find(&articles).Error
 	return articles, err
@@ -67,6 +68,7 @@ func (r *articleRepository) GetByTitle(title string) (*db.Article, error) {
 	var article db.Article
 	err := r.db.Preload("Source").
 		Preload("Region").
+		Preload("Images").
 		Preload("Categories").
 		Where("title = ?", title).
 		First(&article).Error
@@ -77,6 +79,7 @@ func (r *articleRepository) GetByOriginalUrl(url string) (*db.Article, error) {
 	var article db.Article
 	err := r.db.Preload("Source").
 		Preload("Region").
+		Preload("Images").
 		Preload("Categories").
 		Where("original_url = ?", url).
 		First(&article).Error
@@ -93,6 +96,7 @@ func (r *articleRepository) GetWithRelations(id uuid.UUID) (*db.Article, error) 
 	var article db.Article
 	err := r.db.Preload("Source").
 		Preload("Region").
+		Preload("Images").
 		Preload("Categories").
 		First(&article, id).Error
 	return &article, err

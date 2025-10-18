@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/xml"
 	"golang.org/x/net/html"
+	"regexp"
 	"strings"
 	"time"
 	"vuka-api/pkg/models/db"
@@ -44,11 +45,15 @@ func (feed *Item) ToArticle() (*db.Article, error) {
 
 	images, _ := extractImagesFromHTML(feed.Description)
 
+	// Remove img tags from description
+	re := regexp.MustCompile(`<img[^>]*>`)
+	summary := re.ReplaceAllString(feed.Description, "")
+
 	article := &db.Article{
 		Title:       feed.Title,
 		Language:    "",
 		OriginalUrl: feed.Link,
-		Summary:     feed.Description,
+		Summary:     summary, // Use cleaned summary
 		ContentBody: feed.ContentEncoded,
 		PublishedAt: publishedAt,
 		IsFeatured:  false,
