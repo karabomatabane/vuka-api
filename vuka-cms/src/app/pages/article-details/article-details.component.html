@@ -15,7 +15,7 @@
   </div>
 
   <div *ngIf="!isLoading && article">
-    <mat-card>
+    <mat-card class="article-card">
       <mat-card-header>
         <mat-card-title>
           <a [href]="article.originalUrl" target="_blank" rel="noopener noreferrer">{{ article.title }}</a>
@@ -25,13 +25,17 @@
           <span class="separator">|</span>
           <span>{{ article.publishedAt | date:'longDate' }}</span>
         </mat-card-subtitle>
-        <mat-chip-listbox class="mat-mdc-chip-set-stacked">
-          <mat-chip-option *ngFor="let category of article.categories">{{category.name}}</mat-chip-option>
-        </mat-chip-listbox>
       </mat-card-header>
+       <div class="category-chips">
+          <mat-chip *ngFor="let category of article.categories">{{category.name}}</mat-chip>
+        </div>
+      <img mat-card-image [src]="mainImageUrl" alt="Main article image">
       <mat-card-content>
-        <div [innerHTML]="article.contentBody"></div>
+        <div [innerHTML]="article.summary"></div>
       </mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click)="openContentDialog()">Read Full Article</button>
+      </mat-card-actions>
     </mat-card>
   </div>
 </div>

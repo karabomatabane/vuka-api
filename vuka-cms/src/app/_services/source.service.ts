@@ -29,4 +29,8 @@ export class SourceService {
   deleteSource(id: string) {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  ingestSourceFeed(sourceId: string) {
+    return this.http.post(`${this.apiUrl}/${sourceId}/ingest`, {});
+  }
 }

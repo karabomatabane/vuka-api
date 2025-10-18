@@ -24,7 +24,8 @@ var RegisterSourceRoutes = func(router *mux.Router) {
 			next.ServeHTTP(w, r)
 		})
 	})
-		// Admin-only routes for source management
+	// Admin-only routes for source management
 	protectedRouter.HandleFunc("/{id}", sourceController.UpdateSource).Methods(http.MethodPatch)
 	protectedRouter.HandleFunc("/{id}", sourceController.DeleteSource).Methods(http.MethodDelete)
+	protectedRouter.HandleFunc("/{id}/ingest", sourceController.IngestSourceFeed).Methods(http.MethodPost)
 }

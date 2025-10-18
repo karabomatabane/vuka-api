@@ -43,14 +43,16 @@ func (s *AuthService) Register(body models.RegisterBody) (*models.AuthResponse, 
 		return nil, err
 	}
 
-	token, err := utils.GenerateTokenString(dbUser.ID, dbUser.RoleID, time.Now().Add(time.Hour*24))
-	if err != nil {
-		return nil, err
-	}
 	dbUserWithRole, err := s.repos.User.GetByID(dbUser.ID)
 	if err != nil {
 		return nil, err
 	}
+
+	token, err := utils.GenerateTokenString(dbUserWithRole.ID, dbUserWithRole.RoleID, dbUserWithRole.Role.Name, time.Now().Add(time.Hour*24))
+	if err != nil {
+		return nil, err
+	}
+
 	user := models.AuthResponse{
 		Username:    dbUserWithRole.Username,
 		Role:        dbUserWithRole.Role.Name,
@@ -75,7 +77,7 @@ func (s *AuthService) Login(body models.LoginBody) (*models.AuthResponse, error)
 		return nil, errors.New(httpx.InvalidCredentials)
 	}
 
-	token, err := utils.GenerateTokenString(dbUser.ID, dbUser.RoleID, time.Now().Add(time.Hour*24))
+	token, err := utils.GenerateTokenString(dbUser.ID, dbUser.RoleID, dbUser.Role.Name, time.Now().Add(time.Hour*24))
 	if err != nil {
 		return nil, errors.New(httpx.InvalidCredentials)
 	}

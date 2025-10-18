@@ -8,6 +8,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { ArticleContentDialogComponent } from './article-content-dialog.component';
 
 @Component({
   selector: 'app-article-details',
@@ -20,6 +22,7 @@ import { MatChipsModule } from '@angular/material/chips';
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
+    MatDialogModule,
   ],
   templateUrl: './article-details.component.html',
   styleUrls: ['./article-details.component.scss'],
@@ -28,9 +31,11 @@ export class ArticleDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private articleService = inject(ArticleService);
   private router = inject(Router);
+  private dialog = inject(MatDialog);
 
   article: Article | undefined;
   isLoading = true;
+  mainImageUrl: string | undefined;
 
   ngOnInit() {
     const articleId = this.route.snapshot.paramMap.get('id');
@@ -57,6 +62,9 @@ export class ArticleDetailsComponent implements OnInit {
         }
 
         this.article = article;
+        const mainImage = this.article.images?.find(img => img.isMain);
+        this.mainImageUrl = mainImage?.url ?? "images/placeholder.png";
+
         this.isLoading = false;
       });
     }
@@ -64,5 +72,12 @@ export class ArticleDetailsComponent implements OnInit {
 
   goToEdit() {
     this.router.navigate(['/articles', this.article!.id, 'edit']);
+  }
+
+  openContentDialog(): void {
+    this.dialog.open(ArticleContentDialogComponent, {
+      maxWidth: '800px',
+      data: { title: this.article?.title, contentBody: this.article?.contentBody },
+    });
   }
 }

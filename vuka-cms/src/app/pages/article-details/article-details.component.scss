@@ -36,3 +36,43 @@ mat-card-title a {
 mat-card-title a:hover {
   text-decoration: underline;
 }
+
+img[mat-card-image] {
+  max-height: 400px;
+  object-fit: cover;
+  margin: 1rem;
+  border-radius: 1.2rem;
+}
+
+.article-card {
+  margin: 3%;
+  width: auto;
+  max-width: 820px;
+  text-align: left;
+}
+
+.category-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 1rem .8rem;
+  margin: 0;
+  flex-wrap: nowrap;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+  }
+}
+
+mat-chip {
+  flex-shrink: 0;
+}

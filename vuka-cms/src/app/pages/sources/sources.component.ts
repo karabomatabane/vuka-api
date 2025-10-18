@@ -104,4 +104,15 @@ export class SourcesComponent implements OnInit, AfterViewInit {
       });
     }
   }
+
+  ingestFeed(source: Source) {
+    this.sourceService.ingestSourceFeed(source.id).subscribe({
+      next: (res) => {
+        console.log('Feed ingestion started for', source.name, res);
+      },
+      error: (err) => {
+        console.error('Error ingesting feed for', source.name, err);
+      },
+    });
+  }
 }

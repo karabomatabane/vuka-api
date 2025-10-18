@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"vuka-api/pkg/config"
 	"vuka-api/pkg/httpx"
@@ -13,12 +14,14 @@ import (
 
 type SourceController struct {
 	sourceService *services.SourceService
+	rssService    *services.RssService
 }
 
 func NewSourceController() *SourceController {
 	serviceManager := services.NewServices(config.GetDB())
 	return &SourceController{
 		sourceService: serviceManager.Source,
+		rssService:    serviceManager.Rss,
 	}
 }
 
@@ -82,4 +85,34 @@ func (sc *SourceController) DeleteSource(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (sc *SourceController) IngestSourceFeed(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	fmt.Println("Syncing source")
+	sourceID, err := uuid.Parse(vars["id"])
+	if err != nil {
+		httpx.WriteErrorJSON(w, "Invalid source ID", http.StatusBadRequest)
+		return
+	}
+
+	source, err := sc.sourceService.GetSourceByID(sourceID.String())
+	if err != nil {
+		httpx.WriteErrorJSON(w, "Source not found", http.StatusNotFound)
+		return
+	}
+
+	if source.RssFeedUrl == "" {
+		httpx.WriteErrorJSON(w, "Source does not have an RSS feed URL", http.StatusBadRequest)
+		return
+	}
+
+	go func() {
+		if err := sc.rssService.IngestRSSFeedWithSource(source.RssFeedUrl, &sourceID); err != nil {
+			// Log the error, but don't write to the response as it's in a goroutine
+			fmt.Printf("Error ingesting RSS feed for source %s: %v\n", sourceID, err)
+		}
+	}()
+
+	httpx.WriteJSON(w, http.StatusAccepted, map[string]string{"message": "RSS feed ingestion started"})
 }

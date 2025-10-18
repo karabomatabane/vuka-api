@@ -21,6 +21,7 @@ func main() {
 		&db.Section{},
 		&db.Category{},
 		&db.Article{},
+		&db.ArticleImage{},
 		&db.Region{},
 		&db.DirectoryCategory{},
 		&db.DirectoryEntry{},

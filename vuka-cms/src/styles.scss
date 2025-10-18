@@ -3,11 +3,13 @@
 @include mat.core();
 
 :root {
-  @include mat.snack-bar-overrides((
-    container-color: #fcf9f6,
-    button-color: #ba1a1a,
-    supporting-text-color: #1c1c1b,
-  ));
+  @include mat.snack-bar-overrides(
+    (
+      container-color: #fcf9f6,
+      button-color: #ba1a1a,
+      supporting-text-color: #1c1c1b,
+    )
+  );
 }
 
 $mat-primary: (
@@ -41,26 +43,29 @@ $my-theme: mat.m2-define-light-theme(
 // This mixin outputs the CSS variables based on the theme map.
 @include mat.all-component-themes($my-theme);
 
-
 // Dark theme definition
-$my-dark-theme: mat.m2-define-dark-theme((
-  color: (
-    primary: $theme-primary,
-    accent: $theme-accent,
-  ),
-  typography: mat.m2-define-typography-config(),
-  density: 0,
-));
+$my-dark-theme: mat.m2-define-dark-theme(
+  (
+    color: (
+      primary: $theme-primary,
+      accent: $theme-accent,
+    ),
+    typography: mat.m2-define-typography-config(),
+    density: 0,
+  )
+);
 
 // Apply the dark theme by adding the `.dark-theme` class to the `body` element.
 body.dark-theme {
   @include mat.all-component-colors($my-dark-theme);
 
-  @include mat.snack-bar-overrides((
-    container-color: #131312,
-    button-color: #ffb4ab,
-    supporting-text-color: #e5e2e0,
-  ));
+  @include mat.snack-bar-overrides(
+    (
+      container-color: #131312,
+      button-color: #ffb4ab,
+      supporting-text-color: #e5e2e0,
+    )
+  );
 }
 
 @layer view-transitions {
@@ -131,7 +136,20 @@ body.sidenav-collapsed .snack-bar-container {
   margin-left: 65px !important;
 }
 
-.table-container, .table-wrapper {
+.table-container,
+.table-wrapper {
   margin-bottom: 16px !important;
   border-radius: 18px !important;
+}
+
+figure, p {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem 0;
+  img {
+    max-height: 400px;
+    border-radius: 1.2rem;
+    max-width: 100%;
+    object-fit: cover;  
+  }
 }

@@ -53,6 +53,9 @@
             <button mat-icon-button color="warn" (click)="deleteSource(source)" matTooltip="Delete Source">
               <mat-icon>delete</mat-icon>
             </button>
+            <button mat-icon-button (click)="ingestFeed(source)" matTooltip="Sync Feed">
+              <mat-icon>sync</mat-icon>
+            </button>
           </td>
         </ng-container>
 
