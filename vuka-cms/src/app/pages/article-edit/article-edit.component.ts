@@ -46,7 +46,7 @@ export class ArticleEditComponent implements OnInit {
     this.articleId = this.route.snapshot.paramMap.get('id')!;
     this.editForm = this.fb.group({
       title: ['', Validators.required],
-      contentBody: ['', Validators.required],
+      summary: ['', Validators.required],
       isFeatured: [false],
       categoryIds: [[]],
     });
