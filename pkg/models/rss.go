@@ -21,6 +21,7 @@ type Channel struct {
 	Title       string   `xml:"title"`
 	Link        string   `xml:"link"`
 	Description string   `xml:"description"`
+	Language    string   `xml:"language"`
 	Items       []Item   `xml:"item"`
 }
 
@@ -37,7 +38,7 @@ type Item struct {
 	ContentEncoded string   `xml:"http://purl.org/rss/1.0/modules/content/ encoded"`
 }
 
-func (feed *Item) ToArticle() (*db.Article, error) {
+func (feed *Item) ToArticle(language string) (*db.Article, error) {
 	publishedAt, err := time.Parse(time.RFC1123Z, feed.PubDate)
 	if err != nil {
 		return nil, err
@@ -51,7 +52,7 @@ func (feed *Item) ToArticle() (*db.Article, error) {
 
 	article := &db.Article{
 		Title:       feed.Title,
-		Language:    "",
+		Language:    language,
 		OriginalUrl: feed.Link,
 		Summary:     summary, // Use cleaned summary
 		ContentBody: feed.ContentEncoded,

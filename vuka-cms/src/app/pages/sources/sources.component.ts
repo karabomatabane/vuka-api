@@ -23,6 +23,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Source } from 'src/app/_models/source.model';
 import { SourceService } from 'src/app/_services/source.service';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-sources',
@@ -39,6 +40,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatButtonModule,
+    MatSnackBarModule,
   ],
   providers: [SourceService],
   templateUrl: './sources.component.html',
@@ -49,6 +51,7 @@ export class SourcesComponent implements OnInit, AfterViewInit {
   private sourceService = inject(SourceService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private snackBar = inject(MatSnackBar);
 
   displayedColumns: string[] = ['name', 'websiteUrl', 'rssFeedUrl', 'actions'];
   dataSource = new MatTableDataSource<Source>([]);
@@ -107,11 +110,11 @@ export class SourcesComponent implements OnInit, AfterViewInit {
 
   ingestFeed(source: Source) {
     this.sourceService.ingestSourceFeed(source.id).subscribe({
-      next: (res) => {
-        console.log('Feed ingestion started for', source.name, res);
+      next: (res: any) => {
+        this.snackBar.open(res.message, 'Close', { duration: 3000 });
       },
       error: (err) => {
-        console.error('Error ingesting feed for', source.name, err);
+        this.snackBar.open('Error starting feed ingestion', 'Close', { duration: 3000 });
       },
     });
   }

@@ -54,7 +54,7 @@ func (s *RssService) IngestRSSFeedWithSource(url string, sourceID *uuid.UUID) er
 
 	// Save all articles from the RSS feed
 	for i, item := range rss.Channel.Items {
-		article, err := item.ToArticle()
+		article, err := item.ToArticle(rss.Channel.Language)
 		if err != nil {
 			log.Printf("Failed to convert RSS item %d to article: %v", i, err)
 			continue
