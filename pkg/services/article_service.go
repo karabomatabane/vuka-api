@@ -64,7 +64,7 @@ func (s *ArticleService) UpdateArticle(id string, updates map[string]any) (*db.A
 		return nil, err
 	}
 
-	if categoryIds, ok := updates["categoryIds"].([]interface{}); ok {
+	if categoryIds, ok := updates["categoryIds"].([]any); ok {
 		var categories []db.Category
 		if err := s.repos.Category.FindIn("id", categoryIds, &categories); err != nil {
 			return nil, err

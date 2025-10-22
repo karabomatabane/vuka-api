@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func RegisterCategoryRoutes(router *mux.Router, controller *controllers.CategoryController) {
+var RegisterCategoryRoutes = func(router *mux.Router) {
+	controller := controllers.NewCategoryController()
 	router.HandleFunc("/category", controller.GetAllCategories).Methods("GET")
 }

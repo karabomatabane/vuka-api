@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"vuka-api/pkg/config"
 	"vuka-api/pkg/httpx"
 	"vuka-api/pkg/services"
 )
@@ -12,8 +13,9 @@ type CategoryController struct {
 }
 
 // NewCategoryController creates a new CategoryController.
-func NewCategoryController(service *services.CategoryService) *CategoryController {
-	return &CategoryController{service: service}
+func NewCategoryController() *CategoryController {
+	serviceManager := services.NewServices(config.GetDB())
+	return &CategoryController{service: serviceManager.Category}
 }
 
 // GetAllCategories handles the request to get all categories.

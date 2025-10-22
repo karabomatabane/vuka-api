@@ -13,6 +13,7 @@ type Repositories struct {
 	Role     contracts.RoleRepository
 	Source   contracts.SourceRepository
 	Category contracts.CategoryRepository
+	Directory contracts.DirectoryRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
@@ -22,5 +23,6 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Role:     implementations.NewRoleRepository(db),
 		Source:   implementations.NewSourceRepository(db),
 		Category: implementations.NewCategoryRepository(db),
+		Directory: implementations.NewDirectoryRepository(db),
 	}
 }

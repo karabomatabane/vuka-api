@@ -7,16 +7,9 @@
   </div>
 </div>
 <mat-nav-list>
-  <a mat-list-item *ngFor="let item of menuItems()" class="menu-item" [routerLink]="item.route"
-    routerLinkActive="selected-menu-item" #rla="routerLinkActive" [activated]="rla.isActive" [matTooltip]="item.label"
-    [matTooltipDisabled]="!sideNavCollapsed()">
-    <mat-icon matListItemIcon fontSet="material-symbols-outlined" [ngClass]="rla.isActive ? 'filledIcon' : ''">{{
-      item.icon }}</mat-icon>
-    <span matListItemTitle *ngIf="!sideNavCollapsed()">{{ item.label }}</span>
-  </a>
-  <a mat-list-item (click)="logout()" class="menu-item" *ngIf="currentUser()">
-    <mat-icon matListItemIcon fontSet="material-symbols-outlined" matTooltip="Logout"
-      [matTooltipDisabled]="!sideNavCollapsed()">logout</mat-icon>
-    <span matListItemTitle *ngIf="!sideNavCollapsed()">Logout</span>
-  </a>
+  @for (item of menuItems(); track item.label) {
+  <app-menu-item [item]="item" [collapsed]="sideNavCollapsed()"></app-menu-item>
+  }
+  <app-menu-item [item]="logoutItem" [collapsed]="sideNavCollapsed()" [onClick]="logout"
+    [visible]="currentUser() != null"></app-menu-item>
 </mat-nav-list>

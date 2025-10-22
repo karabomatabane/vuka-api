@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"vuka-api/pkg/config"
-	"vuka-api/pkg/controllers"
 	"vuka-api/pkg/models/db"
 	"vuka-api/pkg/routes"
 	"vuka-api/pkg/services"
@@ -62,9 +61,8 @@ func main() {
 	routes.RegisterArticleRoutes(router)
 	routes.RegisterRoleRoutes(router)
 	routes.RegisterSourceRoutes(router)
-
-	categoryController := controllers.NewCategoryController(serviceManager.Category)
-	routes.RegisterCategoryRoutes(router, categoryController)
+	routes.RegisterCategoryRoutes(router)
+	routes.RegisterDirectoryRoutes(router)
 
 	// Migrate sources from CSV on startup
 	// MigrateSources(serviceManager.Source, "bin/sources.csv")
@@ -78,7 +76,7 @@ func main() {
 	}
 
 	// Start the cron service
-	cronService.Start()
+	// cronService.Start()
 	log.Println("Cron service started - RSS feeds will be ingested hourly")
 
 	c := cors.New(cors.Options{

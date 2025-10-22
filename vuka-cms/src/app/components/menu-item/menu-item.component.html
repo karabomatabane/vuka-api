@@ -1,0 +1,77 @@
+@if (visible()) {
+  @if (onClick()) {
+    <a mat-list-item (click)="onClick()?.()" class="menu-item">
+      <mat-icon
+        matListItemIcon
+        fontSet="material-symbols-outlined"
+        [matTooltip]="item().label"
+        [matTooltipDisabled]="!collapsed()"
+        >{{ item().icon }}</mat-icon
+      >
+      @if (!collapsed()) {
+        <span matListItemTitle>{{ item().label }}</span>
+      }
+    </a>
+  } @else {
+    <a
+      mat-list-item
+      class="menu-item"
+      [routerLink]="item().route"
+      (click)="toggleNestedMenu()"
+      routerLinkActive="selected-menu-item"
+      #rla="routerLinkActive"
+      [activated]="rla.isActive"
+      [matTooltip]="item().label"
+      [matTooltipDisabled]="!collapsed()"
+    >
+      <mat-icon
+        matListItemIcon
+        fontSet="material-symbols-outlined"
+        [ngClass]="rla.isActive ? 'filledIcon' : ''"
+        >{{ item().icon }}</mat-icon
+      >
+      @if (!collapsed()) {
+        <span matListItemTitle>{{ item().label }}</span>
+      }
+
+      @if (item().subItems) {
+        <span matListItemMeta>
+          <mat-icon
+            fontSet="material-symbols-outlined"
+            [ngClass]="rla.isActive ? 'active' : ''"
+          >
+            {{ nestedMenuOpen() ? "expand_more" : "chevron_right" }}
+          </mat-icon>
+        </span>
+      }
+    </a>
+  }
+
+  @if (item().subItems && nestedMenuOpen()) {
+    <div @expandCollapseMenu>
+      @for (subItem of item().subItems; track subItem.label) {
+        <a
+          mat-list-item
+          class="menu-item indented"
+          [routerLink]="subItem.route"
+          [class.indented]="!collapsed()"
+          routerLinkActive="selected-menu-item"
+          #rla="routerLinkActive"
+          [activated]="rla.isActive"
+          [matTooltip]="subItem.label"
+          [matTooltipDisabled]="!collapsed()"
+        >
+          <mat-icon
+            matListItemIcon
+            fontSet="material-symbols-outlined"
+            [ngClass]="rla.isActive ? 'filledIcon' : ''"
+            >{{ subItem.icon }}</mat-icon
+          >
+          @if (!collapsed()) {
+            <span matListItemTitle>{{ subItem.label }}</span>
+          }
+        </a>
+      }
+    </div>
+  }
+}

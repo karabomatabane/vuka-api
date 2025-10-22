@@ -6,11 +6,15 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthenticationService } from 'src/app/_services/auth.service';
+import { DirectoryService } from 'src/app/_services/directory.service';
+import { DirectoryCategory } from 'src/app/_models/directory-category.model';
+import { MenuItemComponent } from "../menu-item/menu-item.component";
 
 export type MenuItem = {
   icon: string;
   label: string;
-  route: string;
+  route?: string;
+  subItems?: MenuItem[];
 };
 
 @Component({
@@ -20,20 +24,27 @@ export type MenuItem = {
     CommonModule,
     MatListModule,
     MatIconModule,
-    RouterLink,
-    RouterLinkActive,
-    MatTooltipModule,
-  ],
+    MenuItemComponent
+],
   templateUrl: './x-sidenav.component.html',
   styleUrls: ['./x-sidenav.component.scss'],
 })
 export class XSidenavComponent {
   private authService = inject(AuthenticationService);
+  private directoryService = inject(DirectoryService);
   private router = inject(Router);
 
   currentUser = this.authService.currentUser;
+  directoryCategories = signal<DirectoryCategory[]>([]);
+
+  ngOnInit() {
+    this.directoryService.getDirectories().subscribe((categories) => {
+      this.directoryCategories.set(categories);
+    });
+  }
 
   sideNavCollapsed = signal(false);
+  subMenuOpen = signal(false);
   @Input() set collapsed(val: boolean) {
     this.sideNavCollapsed.set(val);
   }
@@ -46,7 +57,18 @@ export class XSidenavComponent {
         { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
         { icon: 'newsstand', label: 'Articles', route: '/articles' },
         { icon: 'home_storage', label: 'Sources', route: '/sources' },
-        { icon: 'folder', label: 'Directories', route: '/directories' },
+        {
+          icon: 'inventory_2',
+          label: 'Directories',
+          route: '/directories',
+          subItems: [
+            ...this.directoryCategories().map((category) => ({
+              icon: 'folder',
+              label: category.name,
+              route: `/directories/${category.id}`,
+            })),
+          ],
+        },
         {
           icon: 'security',
           label: 'Roles & Permissions',
@@ -58,7 +80,9 @@ export class XSidenavComponent {
     }
   });
 
-  logout() {
+  logoutItem: MenuItem = { icon: 'logout', label: 'Logout' };
+
+  logout = () => {
     this.authService.logout();
     this.router.navigate(['/login']);
   }

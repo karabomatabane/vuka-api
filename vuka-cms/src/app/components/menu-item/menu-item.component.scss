@@ -1,0 +1,31 @@
+
+.menu-item {
+  border-left: 5px solid;
+  border-left-color: transparent;
+}
+
+/* Light mode hover */
+.menu-item:hover:not(.selected-menu-item) {
+  border-left-color: #F4F4F4;
+  border-radius: 0 !important;
+}
+
+/* Dark mode hover */
+:host-context(body.dark-theme) .menu-item:hover:not(.selected-menu-item) {
+  border-left-color: #515151;
+}
+
+.selected-menu-item {
+  border-left: 5px solid;
+  border-left-color: var(--primary-color);
+  border-radius: 0 !important;
+  background-color: #DFDFDF !important;
+  mat-icon.active {
+    color: var(--primary-color);
+    margin-top: 6px;
+  }
+}
+
+.indented {
+  --mat-list-list-item-leading-icon-start-space: 48px;
+}
