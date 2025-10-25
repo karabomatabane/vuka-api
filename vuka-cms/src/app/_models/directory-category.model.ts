@@ -5,3 +5,18 @@ export interface DirectoryCategory extends BaseModel {
   name: string;
   directories: DirectoryEntry[];
 }
+
+export interface OverviewDirectoryCategory extends BaseModel {
+  id: string;
+  name: string;
+  totalEntries: number;
+}
+
+
+export interface DirectoryOverview {
+  categories: OverviewDirectoryCategory[];
+  personalised: {
+    pinned: OverviewDirectoryCategory[];
+    recent: OverviewDirectoryCategory[];
+  };
+}

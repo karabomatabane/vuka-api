@@ -1,21 +1,63 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DirectoryService } from 'src/app/_services/directory.service';
-import { MatIcon } from "@angular/material/icon";
+import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatButton } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
+import { DirectoryFormDialogComponent } from 'src/app/components/directory-form-dialog/directory-form-dialog.component';
+import { AnimationOptions, LottieComponent } from 'ngx-lottie';
+import { AnimationItem } from 'lottie-web';
+import { DirectoryOverview } from 'src/app/_models/directory-category.model';
+import { MatListModule } from '@angular/material/list';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
   selector: 'app-directories',
-  imports: [MatIcon, MatButton],
+  imports: [
+    MatIcon,
+    MatButton,
+    LottieComponent,
+    MatListModule,
+    MatIcon,
+    CommonModule,
+  ],
   templateUrl: './directories.component.html',
-  styleUrl: './directories.component.scss'
+  styleUrl: './directories.component.scss',
 })
 export class DirectoriesComponent {
-    constructor(private directoryService: DirectoryService) {}
+  constructor(
+    private directoryService: DirectoryService,
+    private router: Router,
+  ) {}
+  readonly dialog = inject(MatDialog);
+  overview?: DirectoryOverview;
 
-    ngOnInit() {
-      this.directoryService.getDirectories().subscribe((data) => {
-        console.log(data);
-      });
-    }
+  options: AnimationOptions = {
+    path: '/lottie/no-data.json',
+  };
+
+  ngOnInit() {
+    this.directoryService.getOverview().subscribe((data) => {
+      this.overview = data;
+    });
+  }
+
+  animationCreated(animationItem: AnimationItem): void {
+    console.log(animationItem);
+  }
+
+  onAddCategory() {
+    const dialogRef = this.dialog.open(DirectoryFormDialogComponent);
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Broadcast event to Navbar to refresh directories
+      }
+    });
+  }
+
+  openDirectory(id: string) {
+    this.router.navigate([`/directories/${id}`]);
+  }
 }

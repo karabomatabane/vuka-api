@@ -29,6 +29,7 @@ func main() {
 		&db.Role{},
 		&db.User{},
 		&db.RoleSectionPermission{},
+		&db.UserDirectoryMeta{},
 	)
 	if err != nil {
 		fmt.Printf("Migration failed: %v\n", err)

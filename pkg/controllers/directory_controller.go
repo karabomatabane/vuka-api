@@ -4,8 +4,12 @@ import (
 	"net/http"
 	"vuka-api/pkg/config"
 	"vuka-api/pkg/httpx"
+	"vuka-api/pkg/middleware"
 	"vuka-api/pkg/models/db"
 	"vuka-api/pkg/services"
+
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 // DirectoryController is a controller for directory-related operations.
@@ -17,6 +21,31 @@ type DirectoryController struct {
 func NewDirectoryController() *DirectoryController {
 	serviceManager := services.NewServices(config.GetDB())
 	return &DirectoryController{service: serviceManager.Directory}
+}
+
+// GetDirectoryOverview handles the request to get an overview of the directory.
+func (c *DirectoryController) GetDirectoryOverview(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	user, ok := r.Context().Value(middleware.UserContextKey).(jwt.MapClaims)
+	if !ok {
+		httpx.WriteErrorJSON(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	userID, err := uuid.Parse(user["userId"].(string))
+	if err != nil {
+		httpx.WriteErrorJSON(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	response, err := c.service.GetDirectoryOverview(userID)
+	if err != nil {
+		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpx.WriteJSON(w, http.StatusOK, response)
 }
 
 // GetAllCategories handles the request to get all categories.

@@ -2,6 +2,7 @@ package services
 
 import (
 	"vuka-api/pkg/models/db"
+	models "vuka-api/pkg/models/directory"
 	"vuka-api/pkg/repository/contracts"
 
 	"github.com/google/uuid"
@@ -15,6 +16,59 @@ type DirectoryService struct {
 // NewDirectoryService creates a new DirectoryService.
 func NewDirectoryService(repo contracts.DirectoryRepository) *DirectoryService {
 	return &DirectoryService{repo: repo}
+}
+
+// GetDirectoryOverview returns an overview of the directory.
+func (s *DirectoryService) GetDirectoryOverview(userID uuid.UUID) (*models.DirectoryOverviewResponse, error) {
+	categories, err := s.repo.GetCategories()
+	if err != nil {
+		return nil, err
+	}
+
+	respCategories := make([]models.DirectoryCategoryResponse, len(categories))
+	for i, c := range categories {
+		count, err := s.repo.CountEntriesByCategoryID(c.ID)
+		if err != nil {
+			return nil, err
+		}
+		respCategories[i] = models.DirectoryCategoryResponse{
+			ID:           c.ID,
+			Name:         c.Name,
+			TotalEntries: count,
+		}
+	}
+
+	pinned, err := s.repo.GetPinnedDirectories(userID)
+	if err != nil {
+		return nil, err
+	}
+	pinnedResp := make([]models.DirectoryCategoryResponse, len(pinned))
+	for i, p := range pinned {
+		pinnedResp[i] = models.DirectoryCategoryResponse{
+			ID:   p.ID,
+			Name: p.Name,
+		}
+	}
+
+	recent, err := s.repo.GetRecentDirectories(userID)
+	if err != nil {
+		return nil, err
+	}
+	recentResp := make([]models.DirectoryCategoryResponse, len(recent))
+	for i, r := range recent {
+		recentResp[i] = models.DirectoryCategoryResponse{
+			ID:   r.ID,
+			Name: r.Name,
+		}
+	}
+
+	return &models.DirectoryOverviewResponse{
+		Categories: respCategories,
+		Personalized: models.PersonalisedData{
+			Pinned: pinnedResp,
+			Recent: recentResp,
+		},
+	}, nil
 }
 
 // GetAllDirectories returns all directories.

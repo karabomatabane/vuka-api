@@ -10,6 +10,11 @@
       supporting-text-color: #1c1c1b,
     )
   );
+  @include mat.dialog-overrides(
+    (
+      actions-padding: 16px,
+    )
+  );
 }
 
 $mat-primary: (
@@ -68,6 +73,10 @@ body.dark-theme {
   );
 }
 
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-shape: var(--global-corner-radius);
+}
+
 @layer view-transitions {
   ::view-transition-old(root),
   ::view-transition-new(root) {
@@ -95,6 +104,7 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
   --primary-color: #499d23;
+  --global-corner-radius: 18px;
 }
 
 .spacer {
@@ -116,7 +126,11 @@ a {
 }
 
 .filledIcon {
-  font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
 }
 
 .centre {
@@ -139,7 +153,7 @@ body.sidenav-collapsed .snack-bar-container {
 .table-container,
 .table-wrapper {
   margin-bottom: 16px !important;
-  border-radius: 18px !important;
+  border-radius: var(--global-corner-radius) !important;
 }
 
 figure {

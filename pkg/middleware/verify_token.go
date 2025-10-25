@@ -2,11 +2,16 @@ package middleware
 
 import (
 	"context"
-	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/golang-jwt/jwt/v5"
 )
+
+type contextKey string
+
+const UserContextKey contextKey = "user"
 
 func authenticateToken(r *http.Request) (*jwt.Token, jwt.Claims, error) {
 	// Get the Authorization header
@@ -22,7 +27,7 @@ func authenticateToken(r *http.Request) (*jwt.Token, jwt.Claims, error) {
 	}
 
 	// Decode the token using the secret key
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		// Validate the signing method
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, jwt.ErrSignatureInvalid
@@ -38,6 +43,7 @@ func authenticateToken(r *http.Request) (*jwt.Token, jwt.Claims, error) {
 	if !ok || !token.Valid {
 		return nil, nil, err
 	}
+	
 	return token, claims, nil
 }
 
@@ -48,9 +54,10 @@ func VerifyToken(next http.Handler) http.Handler {
 			http.Error(w, "Invalid token", http.StatusForbidden)
 			return
 		}
-
+		
 		// Add claims to the request context
-		ctx := context.WithValue(r.Context(), "user", claims)
+		ctx := context.WithValue(r.Context(), UserContextKey, claims)
+		
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
@@ -71,7 +78,7 @@ func VerifyTokenAndAdmin(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		// Add claims to the request context
-		ctx := context.WithValue(r.Context(), "user", claims)
+		ctx := context.WithValue(r.Context(), UserContextKey, claims)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 }

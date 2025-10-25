@@ -1,5 +1,82 @@
-<h1>Directories</h1>
-<button mat-flat-button color="primary">
+<section class="directories-header">
+  <div class="header-content">
+    <h1>Directories</h1>
+    <h3 class="subtitle">Manage directories and their entries.</h3>
+  </div>
+
+  <button mat-flat-button color="primary" (click)="onAddCategory()">
     <mat-icon>add</mat-icon>
     <span>Add Directory</span>
-</button>
+  </button>
+</section>
+
+<!-- Empty state -->
+@if (
+  !overview ||
+  (!overview.personalised.pinned.length && !overview.personalised.recent.length)
+) {
+  @let header = "No " + (!overview?.categories?.length ? "directories" : "entries");
+  @let message = !overview?.categories?.length ? "Start by creating some directories by clicking the 'Add Directory button'" : "Click on one of the directories on the side panel and start adding entries.";
+  <div class="empty-state">
+    <ng-lottie
+      [options]="options"
+      width="300px"
+      height="300px"
+      (animationCreated)="animationCreated($event)"
+    ></ng-lottie>
+    <h2>{{ header }}</h2>
+    <p>{{ message }}</p>
+  </div>
+}
+
+<!-- Personalised Section -->
+@if (
+  overview &&
+  (overview.personalised.pinned.length || overview.personalised.recent.length)
+) {
+  <div class="personalised-section">
+    <div class="pinned">
+      <h3>Pinned</h3>
+      <mat-list>
+        <mat-list-item
+          *ngFor="let dir of overview.personalised.pinned"
+          (click)="openDirectory(dir.id)"
+        >
+          <mat-icon matListIcon>push_pin</mat-icon>
+          <h4 matLine>{{ dir.name }}</h4>
+          <p matLine>{{ dir.totalEntries }} entries</p>
+        </mat-list-item>
+      </mat-list>
+    </div>
+
+    <div class="recent">
+      <h3>Recent</h3>
+      <mat-list>
+        <mat-list-item
+          *ngFor="let dir of overview.personalised.recent"
+          (click)="openDirectory(dir.id)"
+        >
+          <mat-icon matListIcon>schedule</mat-icon>
+          <h4 matLine>{{ dir.name }}</h4>
+          <p matLine>{{ dir.totalEntries }} entries</p>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
+}
+
+<!-- Category list -->
+<!-- @if (overview?.categories?.length) {
+  <div class="categories">
+    <h3>All Directories</h3>
+    <mat-list>
+      @for (dir of overview?.categories; track dir.id) {
+        <mat-list-item (click)="openDirectory(dir.id)">
+          <mat-icon matListIcon>folder</mat-icon>
+          <h4 matLine>{{ dir.name }}</h4>
+          <p matLine>{{ dir.totalEntries }} directories</p>
+        </mat-list-item>
+      }
+    </mat-list>
+  </div>
+} -->

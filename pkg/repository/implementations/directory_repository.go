@@ -35,3 +35,29 @@ func (r *directoryRepository) GetDirectoryEntriesByCategoryID(categoryID uuid.UU
 	err := r.db.Where("category_id = ?", categoryID).Find(&entries).Error
 	return entries, err
 }
+
+func (r *directoryRepository) CountEntriesByCategoryID(categoryID uuid.UUID) (int64, error) {
+	var count int64
+	err := r.db.Model(&db.DirectoryEntry{}).Where("category_id = ?", categoryID).Count(&count).Error
+	return count, err
+}
+
+func (r *directoryRepository) GetPinnedDirectories(userID uuid.UUID) ([]db.DirectoryCategory, error) {
+	var categories []db.DirectoryCategory
+	err := r.db.
+		Joins("JOIN user_directory_meta ON user_directory_meta.directory_id = directory_categories.id").
+		Where("user_directory_meta.user_id = ? AND user_directory_meta.pinned = ?", userID, true).
+		Find(&categories).Error
+	return categories, err
+}
+
+func (r *directoryRepository) GetRecentDirectories(userID uuid.UUID) ([]db.DirectoryCategory, error) {
+	var categories []db.DirectoryCategory
+	err := r.db.
+		Joins("JOIN user_directory_meta ON user_directory_meta.directory_id = directory_categories.id").
+		Where("user_directory_meta.user_id = ?", userID).
+		Order("user_directory_meta.last_accessed desc").
+		Limit(5).
+		Find(&categories).Error
+	return categories, err
+}

@@ -1,0 +1,52 @@
+.directories-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .header-content {
+    .subtitle {
+      margin: 4px 0 0 0;
+    }
+  }
+}
+
+ng-lottie {
+    margin-left: 44px;
+    display: flex;
+    justify-content: center;
+}
+
+.empty-state {
+  text-align: center;
+  margin-top: 48px;
+
+  h2 {
+    margin-top: 16px;
+    font-size: 1.5rem;
+  }
+
+}
+
+.personalised-section {
+  margin-bottom: 32px;
+
+  h3 {
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+
+  mat-list-item {
+    cursor: pointer;
+  }
+}
+
+.categories {
+  h3 {
+    margin-bottom: 8px;
+  }
+
+  mat-list-item {
+    cursor: pointer;
+  }
+}
