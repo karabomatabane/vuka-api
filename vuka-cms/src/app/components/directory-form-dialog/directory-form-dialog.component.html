@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Create Directory</h1>
-<mat-dialog-content>
+<mat-dialog-content class="form-container">
   <form [formGroup]="directoryForm" (ngSubmit)="onSubmit()">
-    <mat-form-field>
+    <mat-form-field class="full-width">
       <mat-label>Directory Name</mat-label>
       <input matInput formControlName="name" required />
       @if (directoryForm.get("name")?.hasError("required")) {

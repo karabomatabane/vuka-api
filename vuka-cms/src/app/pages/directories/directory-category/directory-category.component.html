@@ -50,6 +50,15 @@
             <td mat-cell *matCellDef="let entry">{{ entry.name }}</td>
           </ng-container>
 
+
+          <!-- Description Column -->
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+            <td mat-cell *matCellDef="let entry">
+              {{ entry.description }}
+            </td>
+          </ng-container>
+
           <!-- Website URL Column -->
           <ng-container matColumnDef="websiteUrl">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Website</th>
@@ -63,11 +72,11 @@
             </td>
           </ng-container>
 
-          <!-- TypeL Column -->
-          <ng-container matColumnDef="rssFeedUrl">
+          <!-- Type Column -->
+          <ng-container matColumnDef="entryType">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
             <td mat-cell *matCellDef="let entry">
-              {{ entry.type }}
+              {{ entry.entryType | titlecase }}
             </td>
           </ng-container>
 

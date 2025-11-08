@@ -25,7 +25,6 @@ import { Router } from '@angular/router';
 import { first } from 'rxjs';
 import { BaseError } from 'src/app/_models/base-error.model';
 import { DirectoryService } from 'src/app/_services/directory.service';
-import { DirectoryFormDialogComponent } from '../directory-form-dialog/directory-form-dialog.component';
 
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -52,7 +51,7 @@ import { ContactType, CONTACT_TYPES, DirectoryEntry } from 'src/app/_models/dire
   styleUrl: './directory-entry-form-dialog.component.scss',
 })
 export class DirectoryEntryFormDialogComponent {
-  readonly dialogRef = inject(MatDialogRef<DirectoryFormDialogComponent>);
+  readonly dialogRef = inject(MatDialogRef<DirectoryEntryFormDialogComponent>);
   readonly data = inject(MAT_DIALOG_DATA);
   private fb = inject(FormBuilder);
   private router = inject(Router);

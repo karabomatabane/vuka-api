@@ -1,45 +1,63 @@
 import { ChangeDetectorRef, Component, Inject, ViewChild } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ActivatedRoute, ParamMap, Router, RouterLink } from '@angular/router';
 import { AnimationItem } from 'lottie-web';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
 import { BaseError } from 'src/app/_models/base-error.model';
 import { DirectoryCategory } from 'src/app/_models/directory-category.model';
 import { DirectoryService } from 'src/app/_services/directory.service';
-import { MatIcon } from '@angular/material/icon';
-import { MatButton } from '@angular/material/button';
+import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatButton, MatButtonModule } from '@angular/material/button';
 import { DirectoryEntryFormDialogComponent } from '../../../components/directory-entry-form-dialog/directory-entry-form-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { DirectoryEntry } from 'src/app/_models/directory-entry.model';
 import { finalize } from 'rxjs';
-import { MatFormField, MatLabel } from "@angular/material/form-field";
-import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import {
+  MatFormField,
+  MatFormFieldModule,
+  MatLabel,
+} from '@angular/material/form-field';
+import {
+  MatProgressSpinner,
+  MatProgressSpinnerModule,
+} from '@angular/material/progress-spinner';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TitleCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-directory-category',
   standalone: true,
   imports: [
     LottieComponent,
-    MatIcon,
-    MatIcon,
-    MatButton,
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    MatFormField,
-    MatLabel,
-    MatProgressSpinner
-],
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+    MatButtonModule,
+    MatSnackBarModule,
+    TitleCasePipe,
+  ],
   templateUrl: './directory-category.component.html',
   styleUrl: './directory-category.component.scss',
 })
 export class DirectoryCategoryComponent {
   entryId: string = '';
   directoryCategory: DirectoryCategory | undefined;
-  displayedColumns: string[] = ['name', 'websiteUrl', 'type', 'actions'];
+  displayedColumns: string[] = [
+    'name',
+    'description',
+    'websiteUrl',
+    'entryType',
+    'actions',
+  ];
   dataSource = new MatTableDataSource<DirectoryEntry>([]);
   isLoading = true;
 
@@ -52,6 +70,10 @@ export class DirectoryCategoryComponent {
   };
   options: AnimationOptions = {
     path: '/lottie/no-data.json',
+  };
+  dialogConfig: MatDialogConfig = {
+    enterAnimationDuration: 300,
+    exitAnimationDuration: 300,
   };
 
   constructor(
@@ -94,6 +116,7 @@ export class DirectoryCategoryComponent {
       .subscribe({
         next: (data: DirectoryCategory) => {
           this.directoryCategory = data;
+          this.dataSource.data = data.entries;
         },
         error: (error: BaseError) => {
           console.error('Error fetching directory entries:', error);
@@ -117,9 +140,9 @@ export class DirectoryCategoryComponent {
 
   onAddEntry() {
     const dialogRef = this.dialog.open(DirectoryEntryFormDialogComponent, {
+      ...this.dialogConfig,
       data: {
         categoryName: this.directoryCategory?.name,
-        categoryId: this.entryId,
       },
     });
 
