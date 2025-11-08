@@ -5,47 +5,52 @@ import { DirectoryEntry } from '../_models/directory-entry.model';
 import { Dir } from '@angular/cdk/bidi';
 import { O } from '@angular/cdk/overlay-module.d-B3qEQtts';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DirectoryService {
-  private apiUrl = 'http://localhost:3000/directory';
+  private readonly baseUrl = `${environment.apiUrl}/directory`;
 
   constructor(private http: HttpClient) {}
 
   getOverview(): Observable<DirectoryOverview> {
-    return this.http.get<DirectoryOverview>(`${this.apiUrl}/overview`);
+    return this.http.get<DirectoryOverview>(`${this.baseUrl}/overview`);
   }
 
   getDirectories(): Observable<DirectoryCategory[]> {
-    return this.http.get<DirectoryCategory[]>(this.apiUrl);
+    return this.http.get<DirectoryCategory[]>(this.baseUrl);
   }
 
-  getDirectoryEntries(categoryId: string): Observable<DirectoryEntry[]> {
-    return this.http.get<DirectoryEntry[]>(
-      `${this.apiUrl}/entries/${categoryId}`
+  getDirectoryEntries(categoryId: string): Observable<DirectoryCategory> {
+    return this.http.get<DirectoryCategory>(
+      `${this.baseUrl}/entries/${categoryId}`
     );
   }
 
+  getEntryById(entryId: string): Observable<DirectoryEntry> {
+    return this.http.get<DirectoryEntry>(`${this.baseUrl}/entry/${entryId}`);
+  }
+
   createDirectoryCategory(category: Partial<DirectoryCategory>) {
-    return this.http.post<any>(this.apiUrl, category);
+    return this.http.post<any>(this.baseUrl, category);
   }
 
   createDirectoryEntry(entry: Partial<DirectoryEntry>) {
-    return this.http.post<DirectoryEntry>(`${this.apiUrl}/entries`, entry);
+    return this.http.post<DirectoryEntry>(`${this.baseUrl}/entries`, entry);
   }
 
   updateDirectoryEntry(entryId: string, entry: Partial<DirectoryEntry>) {
     return this.http.put<DirectoryEntry>(
-      `${this.apiUrl}/entries/${entryId}`,
+      `${this.baseUrl}/entries/${entryId}`,
       entry
     );
   }
 
   deleteDirectoryEntry(entryId: string) {
     return this.http.delete<DirectoryEntry>(
-      `${this.apiUrl}/entries/${entryId}`
+      `${this.baseUrl}/entries/${entryId}`
     );
   }
 }

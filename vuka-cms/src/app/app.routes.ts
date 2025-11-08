@@ -9,6 +9,7 @@ import { ArticleEditComponent } from './pages/article-edit/article-edit.componen
 import { SourceEditComponent } from './pages/source-edit/source-edit.component';
 import { LoginComponent } from './pages/login/login.component';
 import { authGuard } from './_helpers/auth.guard';
+import { DirectoryCategoryComponent } from './pages/directories/directory-category/directory-category.component';
 
 export const routes: Routes = [
   {
@@ -58,6 +59,11 @@ export const routes: Routes = [
   {
     path: 'directories',
     component: DirectoriesComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'directories/:id',
+    component: DirectoryCategoryComponent,
     canActivate: [authGuard],
   },
   {

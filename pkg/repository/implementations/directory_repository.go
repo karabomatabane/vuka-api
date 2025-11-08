@@ -16,11 +16,13 @@ func NewDirectoryRepository(db *gorm.DB) contracts.DirectoryRepository {
 	return &directoryRepository{db: db}
 }
 
-func (r *directoryRepository) CreateCategory(category *db.DirectoryCategory) (error) {
+func (r *directoryRepository) CreateCategory(category *db.DirectoryCategory) error {
 	return r.db.Create(category).Error
 }
 
-func (r *directoryRepository) CreateEntry(entry *db.DirectoryEntry) (error) {
+func (r *directoryRepository) CreateEntry(entry *db.DirectoryEntry) error {
+	// GORM automatically handles the nested creation of ContactInfo
+	// due to the foreign key relationship defined in the model
 	return r.db.Create(entry).Error
 }
 
@@ -30,10 +32,17 @@ func (r *directoryRepository) GetCategories() ([]db.DirectoryCategory, error) {
 	return categories, err
 }
 
-func (r *directoryRepository) GetDirectoryEntriesByCategoryID(categoryID uuid.UUID) ([]db.DirectoryEntry, error) {
-	var entries []db.DirectoryEntry
-	err := r.db.Where("category_id = ?", categoryID).Find(&entries).Error
-	return entries, err
+func (r *directoryRepository) GetDirectoryEntriesByCategoryID(categoryID uuid.UUID) (*db.DirectoryCategory, error) {
+	var category db.DirectoryCategory
+	err := r.db.Preload("Directories.ContactInfo").First(&category, categoryID).Error
+	return &category, err
+}
+
+// GetDirectoryEntryByID implements contracts.DirectoryRepository.
+func (r *directoryRepository) GetDirectoryEntryByID(entryID uuid.UUID) (*db.DirectoryEntry, error) {
+	var entry db.DirectoryEntry
+	err := r.db.Preload("ContactInfo").Preload("Category").First(&entry, entryID).Error
+	return &entry, err
 }
 
 func (r *directoryRepository) CountEntriesByCategoryID(categoryID uuid.UUID) (int64, error) {

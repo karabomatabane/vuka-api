@@ -26,6 +26,25 @@
   }
 }
 
+/* Submenu item active styles */
+.indented.selected-menu-item {
+  background-color: #EFEFEF !important; /* Light tertiary background */
+  color: var(--mat-sys-tertiary) !important;
+  
+  mat-icon.filledIcon, span {
+    color: var(--mat-sys-tertiary) !important;
+  }
+}
+
+/* Dark mode submenu active styles */
+:host-context(body.dark-theme) .indented.selected-menu-item {
+  background-color: #646464 !important;
+  
+  mat-icon.filledIcon, span {
+    color: var(--mat-sys-tertiary) !important;
+  }
+}
+
 .indented {
   --mat-list-list-item-leading-icon-start-space: 48px;
 }

@@ -6,7 +6,7 @@ type DirectoryEntry struct {
 	Model
 	Name        string            `json:"name"`
 	Description string            `json:"description"`
-	ContactInfo string            `json:"contactInfo"`
+	ContactInfo []ContactInfo     `json:"contactInfo" gorm:"foreignKey:DirectoryEntryID"`
 	WebsiteUrl  string            `json:"websiteUrl"`
 	EntryType   string            `json:"entryType"`
 	CategoryID  uuid.UUID         `json:"categoryId" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`

@@ -25,6 +25,7 @@ func main() {
 		&db.Region{},
 		&db.DirectoryCategory{},
 		&db.DirectoryEntry{},
+		&db.ContactInfo{},
 		&db.Permission{},
 		&db.Role{},
 		&db.User{},

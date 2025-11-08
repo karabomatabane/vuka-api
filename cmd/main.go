@@ -90,7 +90,7 @@ func main() {
 		AllowCredentials: true,
 	})
 
-	listeningAddr := fmt.Sprintf("localhost:%v", os.Getenv("PORT"))
+	listeningAddr := fmt.Sprintf("0.0.0.0:%v", os.Getenv("PORT"))
 	log.Printf("Server is running on %s", listeningAddr)
 	log.Fatal(http.ListenAndServe(listeningAddr, c.Handler(router)))
 }

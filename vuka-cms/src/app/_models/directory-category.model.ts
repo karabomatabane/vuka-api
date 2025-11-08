@@ -3,7 +3,7 @@ import { DirectoryEntry } from './directory-entry.model';
 
 export interface DirectoryCategory extends BaseModel {
   name: string;
-  directories: DirectoryEntry[];
+  entries: DirectoryEntry[];
 }
 
 export interface OverviewDirectoryCategory extends BaseModel {

@@ -86,15 +86,23 @@ func (s *DirectoryService) CreateDirectoryEntry(entry *db.DirectoryEntry) error 
 	return s.repo.CreateEntry(entry)
 }
 
-// GetDirectoryEntriesByCategoryID returns all directory entries for a specific category.
-func (s *DirectoryService) GetDirectoryEntriesByCategoryID(categoryID string) ([]db.DirectoryEntry, error) {
+// GetDirectoryEntriesByCategoryID returns a directory category with all its entries.
+func (s *DirectoryService) GetDirectoryEntriesByCategoryID(categoryID string) (*db.DirectoryCategory, error) {
 	uuidCategoryID, err := uuid.Parse(categoryID)
 	if err != nil {
 		return nil, err
 	}
-	entries, err := s.repo.GetDirectoryEntriesByCategoryID(uuidCategoryID)
+	category, err := s.repo.GetDirectoryEntriesByCategoryID(uuidCategoryID)
 	if err != nil {
 		return nil, err
 	}
-	return entries, nil
+	return category, nil
+}
+
+func (s *DirectoryService) GetDirectoryEntryByID(entryID string) (*db.DirectoryEntry, error) {
+	uuidEntryID, err := uuid.Parse(entryID)
+	if err != nil {
+		return nil, err
+	}
+	return s.repo.GetDirectoryEntryByID(uuidEntryID)
 }

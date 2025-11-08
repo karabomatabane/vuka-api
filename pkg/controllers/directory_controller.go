@@ -10,6 +10,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 )
 
 // DirectoryController is a controller for directory-related operations.
@@ -54,24 +55,27 @@ func (c *DirectoryController) GetAllDirectories(w http.ResponseWriter, r *http.R
 	directories, err := c.service.GetAllDirectories()
 	if err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	httpx.WriteJSON(w, http.StatusOK, directories)
 }
 
-// GetDirectoryEntriesByCategoryID handles the request to get all directory entries for a specific category.
+// GetDirectoryEntriesByCategoryID handles the request to get a directory category with all its entries.
 func (c *DirectoryController) GetDirectoryEntriesByCategoryID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	categoryIDStr := r.URL.Query().Get("category_id")
-	if categoryIDStr == "" {
+	categoryID := mux.Vars(r)["category_id"]
+	if categoryID == "" {
 		httpx.WriteErrorJSON(w, "category_id is required", http.StatusBadRequest)
+		return
 	}
 
-	entries, err := c.service.GetDirectoryEntriesByCategoryID(categoryIDStr)
+	category, err := c.service.GetDirectoryEntriesByCategoryID(categoryID)
 	if err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	httpx.WriteJSON(w, http.StatusOK, entries)
+	httpx.WriteJSON(w, http.StatusOK, category)
 }
 
 // CreateDirectoryCategory handles the request to create a new directory category.
@@ -100,10 +104,37 @@ func (c *DirectoryController) CreateDirectoryEntry(w http.ResponseWriter, r *htt
 		return
 	}
 
+	// Validate contact info types before creation
+	for i := range entry.ContactInfo {
+		if !entry.ContactInfo[i].Type.IsValid() {
+			httpx.WriteErrorJSON(w, "Invalid contact type: "+string(entry.ContactInfo[i].Type), http.StatusBadRequest)
+			return
+		}
+		// Ensure the DirectoryEntryID is not set (it will be set automatically)
+		entry.ContactInfo[i].DirectoryEntryID = uuid.Nil
+	}
+
 	if err := c.service.CreateDirectoryEntry(&entry); err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	httpx.WriteJSON(w, http.StatusCreated, entry)
+}
+
+// GetDirectoryEntryByID handles the request for getting an entry by Id.
+func (c *DirectoryController) GetDirectoryEntryByID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	entryID := mux.Vars(r)["entry_id"]
+
+	if entryID == "" {
+		httpx.WriteErrorJSON(w, "entry_id is required", http.StatusBadRequest)
+		return
+	}
+
+	entry, err := c.service.GetDirectoryEntryByID(entryID)
+	if err != nil {
+		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
+	}
+	httpx.WriteJSON(w, http.StatusOK, entry)
 }

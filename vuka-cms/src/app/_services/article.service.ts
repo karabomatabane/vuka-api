@@ -1,30 +1,31 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ArticleService {
-  private apiUrl = 'http://localhost:3000/article';
+  private readonly baseUrl = `${environment.apiUrl}/article`;
   constructor(private http: HttpClient) { }
 
   getArticles() {
-    return this.http.get(this.apiUrl);
+    return this.http.get(this.baseUrl);
   }
 
   getArticleById(id: string) {
-    return this.http.get(`${this.apiUrl}/${id}`);
+    return this.http.get(`${this.baseUrl}/${id}`);
   }
 
   createArticle(article: any) {
-    return this.http.post(this.apiUrl, article);
+    return this.http.post(this.baseUrl, article);
   }
 
   updateArticle(id: string, article: any) {
-    return this.http.put(`${this.apiUrl}/${id}`, article);
+    return this.http.put(`${this.baseUrl}/${id}`, article);
   }
 
   deleteArticle(id: number) {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    return this.http.delete(`${this.baseUrl}/${id}`);
   }
 }

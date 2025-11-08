@@ -9,11 +9,12 @@ import { environment } from 'src/environments/environment';
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
   currentUser = signal<AuthResponse | null>(JSON.parse(localStorage.getItem('currentUser') || 'null'));
+  private readonly baseUrl = environment.apiUrl + '/auth';
 
   constructor(private http: HttpClient) { }
 
   login(username: string, password: string) {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { username, password })
+    return this.http.post<AuthResponse>(`${this.baseUrl}/login`, { username, password })
       .pipe(map(user => {
         localStorage.setItem('currentUser', JSON.stringify(user));
         this.currentUser.set(user);

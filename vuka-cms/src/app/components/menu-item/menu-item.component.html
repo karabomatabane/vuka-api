@@ -17,7 +17,9 @@
       mat-list-item
       class="menu-item"
       [routerLink]="item().route"
-      (click)="toggleNestedMenu()"
+      (mouseover)="setNestedMenuState(true)"
+      (mouseleave)="setNestedMenuState(false)"
+      (click)="onMenuItemClick()"
       routerLinkActive="selected-menu-item"
       #rla="routerLinkActive"
       [activated]="rla.isActive"
@@ -54,6 +56,9 @@
           mat-list-item
           class="menu-item indented"
           [routerLink]="subItem.route"
+          (mouseover)="setNestedMenuState(true)"
+          (mouseleave)="setNestedMenuState(false)"
+          (click)="onSubItemClick()"
           [class.indented]="!collapsed()"
           routerLinkActive="selected-menu-item"
           #rla="routerLinkActive"
