@@ -1,5 +1,5 @@
 import { D } from '@angular/cdk/bidi-module.d-D-fEBKdS';
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, signal } from '@angular/core';
 import {
   FormBuilder,
@@ -31,7 +31,6 @@ import { DirectoryService } from 'src/app/_services/directory.service';
   selector: 'app-directory-form-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
@@ -40,8 +39,8 @@ import { DirectoryService } from 'src/app/_services/directory.service';
     MatDialogModule,
     MatButtonModule,
     MatDialogContent,
-    MatDialogActions,
-  ],
+    MatDialogActions
+],
   templateUrl: './directory-form-dialog.component.html',
   styleUrl: './directory-form-dialog.component.scss',
 })

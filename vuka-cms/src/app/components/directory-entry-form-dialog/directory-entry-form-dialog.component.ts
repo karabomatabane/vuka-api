@@ -26,7 +26,7 @@ import { first } from 'rxjs';
 import { BaseError } from 'src/app/_models/base-error.model';
 import { DirectoryService } from 'src/app/_services/directory.service';
 import { DirectoryFormDialogComponent } from '../directory-form-dialog/directory-form-dialog.component';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -36,7 +36,6 @@ import { ContactType, CONTACT_TYPES, DirectoryEntry } from 'src/app/_models/dire
 @Component({
   selector: 'app-directory-entry-form-dialog',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
     MatFormFieldModule,
@@ -47,8 +46,8 @@ import { ContactType, CONTACT_TYPES, DirectoryEntry } from 'src/app/_models/dire
     MatDialogModule,
     MatButtonModule,
     MatDialogContent,
-    MatDialogActions,
-  ],
+    MatDialogActions
+],
   templateUrl: './directory-entry-form-dialog.component.html',
   styleUrl: './directory-entry-form-dialog.component.scss',
 })

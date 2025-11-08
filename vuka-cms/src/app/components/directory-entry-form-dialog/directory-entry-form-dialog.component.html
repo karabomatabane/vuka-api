@@ -4,89 +4,119 @@
     <mat-form-field class="full-width">
       <mat-label>Name</mat-label>
       <input matInput formControlName="name" required />
-      <mat-error *ngIf="entryForm.get('name')?.hasError('required')">
-        Name is required
-      </mat-error>
-      <mat-error *ngIf="entryForm.get('name')?.hasError('minlength')">
-        Name must be at least 3 characters long
-      </mat-error>
+      @if (entryForm.get("name")?.hasError("required")) {
+        <mat-error> Name is required </mat-error>
+      }
+      @if (entryForm.get("name")?.hasError("minlength")) {
+        <mat-error> Name must be at least 3 characters long </mat-error>
+      }
     </mat-form-field>
     <mat-form-field class="full-width" hintLabel="Max 216 characters">
       <mat-label>Description</mat-label>
-      <textarea matInput #desc formControlName="description" required cdkTextareaAutosize="true"></textarea>
+      <textarea
+        matInput
+        #desc
+        formControlName="description"
+        required
+        cdkTextareaAutosize="true"
+      ></textarea>
       <mat-hint align="end">{{ desc.value.length || 0 }}/216</mat-hint>
-      <mat-error *ngIf="entryForm.get('description')?.hasError('required')">
-        Description is required
-      </mat-error>
-      <mat-error *ngIf="entryForm.get('name')?.hasError('maxlength')">
-        Description must be no more than 216 characters long
-      </mat-error>
+      @if (entryForm.get("description")?.hasError("required")) {
+        <mat-error> Description is required </mat-error>
+      }
+      @if (entryForm.get("name")?.hasError("maxlength")) {
+        <mat-error>
+          Description must be no more than 216 characters long
+        </mat-error>
+      }
     </mat-form-field>
     <mat-form-field class="full-width">
       <mat-label>Website</mat-label>
-      <input matInput formControlName="websiteUrl" placeholder="https://example.com" />
+      <input
+        matInput
+        formControlName="websiteUrl"
+        placeholder="https://example.com"
+      />
     </mat-form-field>
 
     <!-- Contact Information Section -->
     <div class="contact-info-section">
       <h3>Contact Information</h3>
       <div formArrayName="contactInfo">
-        @for (contactGroup of contactInfoArray.controls; track $index; let i = $index) {
+        @for (
+          contactGroup of contactInfoArray.controls;
+          track $index;
+          let i = $index
+        ) {
           <div [formGroupName]="i" class="contact-info-group">
             <div class="contact-info-row">
               <mat-form-field class="contact-type-field">
                 <mat-label>Type</mat-label>
                 <mat-select formControlName="type" required>
                   @for (type of contactTypes; track type.value) {
-                    <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                    <mat-option [value]="type.value">{{
+                      type.label
+                    }}</mat-option>
                   }
                 </mat-select>
-                <mat-error *ngIf="contactGroup.get('type')?.hasError('required')">
-                  Type is required
-                </mat-error>
+                @if (contactGroup.get("type")?.hasError("required")) {
+                  <mat-error> Type is required </mat-error>
+                }
               </mat-form-field>
 
               <mat-form-field class="contact-description-field">
                 <mat-label>Description</mat-label>
-                <input matInput formControlName="description" placeholder="e.g., Main Office, Customer Service" />
+                <input
+                  matInput
+                  formControlName="description"
+                  placeholder="e.g., Main Office, Customer Service"
+                />
               </mat-form-field>
 
               <mat-form-field class="contact-value-field">
                 <mat-label>Value</mat-label>
-                <input matInput formControlName="value" required 
-                       [placeholder]="getPlaceholderForType(contactGroup.get('type')?.value)" />
-                <mat-error *ngIf="contactGroup.get('value')?.hasError('required')">
-                  Value is required
-                </mat-error>
-                <mat-error *ngIf="contactGroup.get('value')?.hasError('invalidEmail')">
-                  Please enter a valid email address
-                </mat-error>
-                <mat-error *ngIf="contactGroup.get('value')?.hasError('invalidPhone')">
-                  Please enter a valid phone number
-                </mat-error>
-                <mat-error *ngIf="contactGroup.get('value')?.hasError('invalidUrl')">
-                  Please enter a valid URL
-                </mat-error>
+                <input
+                  matInput
+                  formControlName="value"
+                  required
+                  [placeholder]="
+                    getPlaceholderForType(contactGroup.get('type')?.value)
+                  "
+                />
+                @if (contactGroup.get("value")?.hasError("required")) {
+                  <mat-error> Value is required </mat-error>
+                }
+                @if (contactGroup.get("value")?.hasError("invalidEmail")) {
+                  <mat-error> Please enter a valid email address </mat-error>
+                }
+                @if (contactGroup.get("value")?.hasError("invalidPhone")) {
+                  <mat-error> Please enter a valid phone number </mat-error>
+                }
+                @if (contactGroup.get("value")?.hasError("invalidUrl")) {
+                  <mat-error> Please enter a valid URL </mat-error>
+                }
               </mat-form-field>
 
-              <button 
-                mat-icon-button 
-                type="button" 
+              <button
+                mat-icon-button
+                type="button"
                 (click)="removeContactInfo(i)"
                 [disabled]="contactInfoArray.length === 1"
-                class="remove-contact-btn">
+                class="remove-contact-btn"
+              >
                 <mat-icon>delete</mat-icon>
               </button>
             </div>
           </div>
         }
       </div>
-      
-      <button 
-        mat-stroked-button 
-        type="button" 
-        (click)="addContactInfo()" 
-        class="add-contact-btn">
+
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="addContactInfo()"
+        class="add-contact-btn"
+      >
         <mat-icon>add</mat-icon>
         Add Contact Info
       </button>
@@ -101,12 +131,13 @@
     [disabled]="loading || !entryForm.valid"
     (click)="onSubmit()"
   >
-    <mat-spinner
-      *ngIf="loading"
-      mat-progress-spinner
-      [diameter]="24"
-      mode="indeterminate"
-    ></mat-spinner>
+    @if (loading) {
+      <mat-spinner
+        mat-progress-spinner
+        [diameter]="24"
+        mode="indeterminate"
+      ></mat-spinner>
+    }
     @if (!loading) {
       <span>Create</span>
     }

@@ -7,7 +7,7 @@ import {
   inject,
   ChangeDetectorRef,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { finalize } from 'rxjs/operators';
 
 // Import Angular Material modules
@@ -29,7 +29,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
   selector: 'app-sources',
   standalone: true,
   imports: [
-    CommonModule,
     RouterLink,
     MatTableModule,
     MatSortModule,
@@ -40,8 +39,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatButtonModule,
-    MatSnackBarModule,
-  ],
+    MatSnackBarModule
+],
   providers: [SourceService],
   templateUrl: './sources.component.html',
   styleUrls: ['./sources.component.scss'],
@@ -73,16 +72,21 @@ export class SourcesComponent implements OnInit, AfterViewInit {
     this.isLoading = true;
     this.sourceService
       .getSources()
-      .pipe(finalize(() => {
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }))
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        }),
+      )
       .subscribe({
         next: (data) => {
           this.dataSource.data = data;
         },
         error: (err) => {
           console.error('Error fetching sources:', err);
+          this.snackBar.open('Error loading sources', 'Close', {
+            duration: 3000,
+          });
         },
       });
   }
@@ -114,7 +118,9 @@ export class SourcesComponent implements OnInit, AfterViewInit {
         this.snackBar.open(res.message, 'Close', { duration: 3000 });
       },
       error: (err) => {
-        this.snackBar.open('Error starting feed ingestion', 'Close', { duration: 3000 });
+        this.snackBar.open('Error starting feed ingestion', 'Close', {
+          duration: 3000,
+        });
       },
     });
   }

@@ -2,7 +2,7 @@ import { Component, computed, Input, inject } from '@angular/core';
 import { signal } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
+
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthenticationService } from 'src/app/_services/auth.service';
@@ -21,7 +21,6 @@ export type MenuItem = {
   selector: 'app-x-sidenav',
   standalone: true,
   imports: [
-    CommonModule,
     MatListModule,
     MatIconModule,
     MenuItemComponent

@@ -9,7 +9,7 @@ import { AnimationItem } from 'lottie-web';
 import { DirectoryOverview } from 'src/app/_models/directory-category.model';
 import { MatListModule } from '@angular/material/list';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   standalone: true,
@@ -19,9 +19,8 @@ import { CommonModule } from '@angular/common';
     MatButton,
     LottieComponent,
     MatListModule,
-    MatIcon,
-    CommonModule,
-  ],
+    MatIcon
+],
   templateUrl: './directories.component.html',
   styleUrl: './directories.component.scss',
 })

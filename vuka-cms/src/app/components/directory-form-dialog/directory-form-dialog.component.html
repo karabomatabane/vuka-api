@@ -4,12 +4,14 @@
     <mat-form-field>
       <mat-label>Directory Name</mat-label>
       <input matInput formControlName="name" required />
-      <mat-error *ngIf="directoryForm.get('name')?.hasError('required')">
-        Directory Name is required
-      </mat-error>
-      <mat-error *ngIf="directoryForm.get('name')?.hasError('minlength')">
-        Directory Name must be at least 3 characters long
-      </mat-error>
+      @if (directoryForm.get("name")?.hasError("required")) {
+        <mat-error> Directory Name is required </mat-error>
+      }
+      @if (directoryForm.get("name")?.hasError("minlength")) {
+        <mat-error>
+          Directory Name must be at least 3 characters long
+        </mat-error>
+      }
     </mat-form-field>
   </form>
 </mat-dialog-content>
@@ -21,12 +23,15 @@
     [disabled]="loading || !directoryForm.valid"
     (click)="onSubmit()"
   >
-    <mat-spinner
-      *ngIf="loading"
-      mat-progress-spinner
-      [diameter]="24"
-      mode="indeterminate"
-    ></mat-spinner>
-    <span *ngIf="!loading">Create</span>
+    @if (loading) {
+      <mat-spinner
+        mat-progress-spinner
+        [diameter]="24"
+        mode="indeterminate"
+      ></mat-spinner>
+    }
+    @if (!loading) {
+      <span>Create</span>
+    }
   </button>
 </mat-dialog-actions>

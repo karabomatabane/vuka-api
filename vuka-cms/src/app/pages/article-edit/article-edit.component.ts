@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,15 +17,14 @@ import { MatSelectModule } from '@angular/material/select';
   selector: 'app-article-edit',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatSlideToggleModule,
     MatProgressSpinnerModule,
-    MatSelectModule,
-  ],
+    MatSelectModule
+],
   templateUrl: './article-edit.component.html',
   styleUrls: ['./article-edit.component.scss'],
 })

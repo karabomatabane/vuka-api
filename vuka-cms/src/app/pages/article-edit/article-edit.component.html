@@ -1,33 +1,49 @@
 <div class="edit-container">
   <h1>Edit Article</h1>
 
-  <div *ngIf="isLoading" class="spinner-container">
-    <mat-progress-spinner color="primary" mode="indeterminate"></mat-progress-spinner>
-  </div>
-
-  <form [formGroup]="editForm" (ngSubmit)="save()" *ngIf="!isLoading">
-    <mat-form-field appearance="outline">
-      <mat-label>Title</mat-label>
-      <input matInput formControlName="title">
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Categories</mat-label>
-      <mat-select formControlName="categoryIds" multiple>
-        <mat-option *ngFor="let category of categories" [value]="category.id">{{ category.name }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Summary</mat-label>
-      <textarea matInput formControlName="summary" rows="10"></textarea>
-    </mat-form-field>
-
-    <mat-slide-toggle formControlName="isFeatured">Is Featured</mat-slide-toggle>
-
-    <div class="form-actions">
-      <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
-      <button mat-flat-button color="primary" type="submit" [disabled]="!editForm.valid">Save</button>
+  @if (isLoading) {
+    <div class="spinner-container">
+      <mat-progress-spinner
+        color="primary"
+        mode="indeterminate"
+      ></mat-progress-spinner>
     </div>
-  </form>
+  }
+
+  @if (!isLoading) {
+    <form [formGroup]="editForm" (ngSubmit)="save()">
+      <mat-form-field appearance="outline">
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="title" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Categories</mat-label>
+        <mat-select formControlName="categoryIds" multiple>
+          @for (category of categories; track category.id) {
+            <mat-option [value]="category.id">{{ category.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Summary</mat-label>
+        <textarea matInput formControlName="summary" rows="10"></textarea>
+      </mat-form-field>
+      <mat-slide-toggle formControlName="isFeatured"
+        >Is Featured</mat-slide-toggle
+      >
+      <div class="form-actions">
+        <button mat-stroked-button type="button" (click)="cancel()">
+          Cancel
+        </button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          [disabled]="!editForm.valid"
+        >
+          Save
+        </button>
+      </div>
+    </form>
+  }
 </div>
