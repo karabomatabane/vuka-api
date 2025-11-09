@@ -48,10 +48,6 @@ func (s *UserService) UpdateUserRole(body user.UpdateUserRoleBody) (*db.User, er
 	return updatedUser, nil
 }
 
-func (s *UserService) CreateUser(user *db.User) error {
-	return s.repos.User.Create(user)
-}
-
 func (s *UserService) UpdateUser(user *db.User) error {
 	return s.repos.User.Update(user)
 }

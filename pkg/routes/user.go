@@ -18,9 +18,6 @@ var RegisterUserRoutes = func(router *mux.Router) {
 	protectedRouter.HandleFunc("/user",
 		userController.GetAllUsers).
 		Methods(http.MethodGet)
-	protectedRouter.HandleFunc("/user",
-		userController.CreateUser).
-		Methods(http.MethodPost)
 	protectedRouter.HandleFunc("/user/{id}",
 		userController.GetUserByID).
 		Methods(http.MethodGet)

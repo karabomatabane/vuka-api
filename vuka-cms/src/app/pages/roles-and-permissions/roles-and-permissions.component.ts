@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../_services/user.service';
 import { RoleService, RoleWithPermissions } from '../../_services/role.service';
 import { PermissionService } from '../../_services/permission.service';
+import { AuthenticationService } from '../../_services/auth.service';
 import { User } from '../../_models/user.model';
 import { Role } from '../../_models/role.model';
 import { Permission } from '../../_models/permission.model';
 import { Section } from '../../_models/section.model';
 
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -17,12 +18,48 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
+import { CommonModule } from '@angular/common';
+
+interface NewUserForm {
+  username?: string;
+  password?: string;
+  confirmPassword?: string;
+  roleId?: string;
+}
+
+// Custom validator for password match
+function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+  const password = control.get('password');
+  const confirmPassword = control.get('confirmPassword');
+  
+  if (!password || !confirmPassword) {
+    return null;
+  }
+  
+  const match = password.value === confirmPassword.value;
+  
+  // Set error on confirmPassword field so mat-error can display it
+  if (!match && confirmPassword.value) {
+    confirmPassword.setErrors({ ...confirmPassword.errors, passwordMismatch: true });
+  } else if (match && confirmPassword.hasError('passwordMismatch')) {
+    // Remove only passwordMismatch error
+    const errors = confirmPassword.errors;
+    if (errors) {
+      delete errors['passwordMismatch'];
+      confirmPassword.setErrors(Object.keys(errors).length > 0 ? errors : null);
+    }
+  }
+  
+  return match ? null : { passwordMismatch: true };
+}
 
 @Component({
   selector: 'app-roles-and-permissions',
   standalone: true,
   imports: [
+    CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     MatTabsModule,
     MatTableModule,
     MatButtonModule,
@@ -31,8 +68,8 @@ import { MatChipsModule } from '@angular/material/chips';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatChipsModule
-],
+    MatChipsModule,
+  ],
   templateUrl: './roles-and-permissions.component.html',
   styleUrl: './roles-and-permissions.component.scss',
 })
@@ -41,21 +78,22 @@ export class RolesAndPermissionsComponent implements OnInit {
   users: User[] = [];
   selectedUser?: User | null;
   isCreatingUser = false;
-  newUser: Partial<User> = {};
-  
+  newUser: NewUserForm = {};
+  newUserForm!: FormGroup;
+
   // Roles
   roles: Role[] = [];
   selectedRole?: Role | null;
   isCreatingRole = false;
   newRole: Partial<Role> = {};
   selectedRolePermissions?: RoleWithPermissions;
-  
+
   // Permissions
   permissions: Permission[] = [];
   selectedPermission?: Permission | null;
   isCreatingPermission = false;
   newPermission: Partial<Permission> = {};
-  
+
   // Sections
   sections: Section[] = [];
   selectedSection?: Section | null;
@@ -67,14 +105,32 @@ export class RolesAndPermissionsComponent implements OnInit {
   permissionAssignment = {
     roleId: '',
     sectionId: '',
-    permissionId: ''
+    permissionId: '',
   };
 
   constructor(
     private userService: UserService,
     private roleService: RoleService,
-    private permissionService: PermissionService
-  ) {}
+    private permissionService: PermissionService,
+    private authService: AuthenticationService,
+    private fb: FormBuilder,
+  ) {
+    this.initNewUserForm();
+  }
+
+  private initNewUserForm(): void {
+    this.newUserForm = this.fb.group({
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]],
+      roleId: ['', [Validators.required]]
+    }, { validators: passwordMatchValidator });
+
+    // Trigger validation on confirmPassword when password changes
+    this.newUserForm.get('password')?.valueChanges.subscribe(() => {
+      this.newUserForm.get('confirmPassword')?.updateValueAndValidity();
+    });
+  }
 
   ngOnInit(): void {
     this.loadData();
@@ -106,7 +162,7 @@ export class RolesAndPermissionsComponent implements OnInit {
 
   // User Management
   loadUsers(): void {
-    this.userService.getAllUsers().subscribe(users => this.users = users);
+    this.userService.getAllUsers().subscribe((users) => (this.users = users));
   }
 
   selectUser(user: User): void {
@@ -117,33 +173,46 @@ export class RolesAndPermissionsComponent implements OnInit {
   startCreatingUser(): void {
     this.isCreatingUser = true;
     this.selectedUser = null;
-    this.newUser = { username: '', password: '', roleId: '' };
+    this.initNewUserForm();
   }
 
   createUser(): void {
-    if (!this.newUser.username || !this.newUser.password || !this.newUser.roleId) return;
-    
-    this.userService.createUser(this.newUser).subscribe(() => {
-      this.loadUsers();
-      this.cancelAllEdits();
-    });
+    if (this.newUserForm.invalid) {
+      this.newUserForm.markAllAsTouched();
+      return;
+    }
+
+    const formValue = this.newUserForm.value;
+    this.authService
+      .register(
+        formValue.username,
+        formValue.password,
+        formValue.confirmPassword,
+        formValue.roleId,
+      )
+      .subscribe(() => {
+        this.loadUsers();
+        this.cancelAllEdits();
+      });
   }
 
   updateUser(): void {
     if (!this.selectedUser) return;
-    
-    this.userService.updateUser(this.selectedUser.id, {
-      username: this.selectedUser.username,
-      roleId: this.selectedUser.roleId
-    }).subscribe(() => {
-      this.loadUsers();
-      this.cancelAllEdits();
-    });
+
+    this.userService
+      .updateUser(this.selectedUser.id, {
+        username: this.selectedUser.username,
+        roleId: this.selectedUser.roleId,
+      })
+      .subscribe(() => {
+        this.loadUsers();
+        this.cancelAllEdits();
+      });
   }
 
   deleteUser(userId: string): void {
     if (!confirm('Are you sure you want to delete this user?')) return;
-    
+
     this.userService.deleteUser(userId).subscribe(() => {
       this.loadUsers();
       this.cancelAllEdits();
@@ -152,7 +221,7 @@ export class RolesAndPermissionsComponent implements OnInit {
 
   // Role Management
   loadRoles(): void {
-    this.roleService.getAllRoles().subscribe(roles => this.roles = roles);
+    this.roleService.getAllRoles().subscribe((roles) => (this.roles = roles));
   }
 
   selectRole(role: Role): void {
@@ -162,9 +231,9 @@ export class RolesAndPermissionsComponent implements OnInit {
   }
 
   loadRolePermissions(roleId: string): void {
-    this.roleService.getRoleWithPermissions(roleId).subscribe(
-      rolePerms => this.selectedRolePermissions = rolePerms
-    );
+    this.roleService
+      .getRoleWithPermissions(roleId)
+      .subscribe((rolePerms) => (this.selectedRolePermissions = rolePerms));
   }
 
   startCreatingRole(): void {
@@ -175,7 +244,7 @@ export class RolesAndPermissionsComponent implements OnInit {
 
   createRole(): void {
     if (!this.newRole.name) return;
-    
+
     this.roleService.createRole(this.newRole).subscribe(() => {
       this.loadRoles();
       this.cancelAllEdits();
@@ -184,18 +253,20 @@ export class RolesAndPermissionsComponent implements OnInit {
 
   updateRole(): void {
     if (!this.selectedRole) return;
-    
-    this.roleService.updateRole(this.selectedRole.id, {
-      name: this.selectedRole.name
-    }).subscribe(() => {
-      this.loadRoles();
-      this.cancelAllEdits();
-    });
+
+    this.roleService
+      .updateRole(this.selectedRole.id, {
+        name: this.selectedRole.name,
+      })
+      .subscribe(() => {
+        this.loadRoles();
+        this.cancelAllEdits();
+      });
   }
 
   deleteRole(roleId: string): void {
     if (!confirm('Are you sure you want to delete this role?')) return;
-    
+
     this.roleService.deleteRole(roleId).subscribe(() => {
       this.loadRoles();
       this.cancelAllEdits();
@@ -209,32 +280,49 @@ export class RolesAndPermissionsComponent implements OnInit {
   }
 
   assignPermission(): void {
-    if (!this.permissionAssignment.roleId || 
-        !this.permissionAssignment.sectionId || 
-        !this.permissionAssignment.permissionId) return;
-    
-    this.roleService.assignPermissionToRole(this.permissionAssignment).subscribe(() => {
-      if (this.selectedRole) {
-        this.loadRolePermissions(this.selectedRole.id);
-      }
-      this.isAssigningPermission = false;
-      this.permissionAssignment = { roleId: '', sectionId: '', permissionId: '' };
-    });
+    if (
+      !this.permissionAssignment.roleId ||
+      !this.permissionAssignment.sectionId ||
+      !this.permissionAssignment.permissionId
+    )
+      return;
+
+    this.roleService
+      .assignPermissionToRole(this.permissionAssignment)
+      .subscribe(() => {
+        if (this.selectedRole) {
+          this.loadRolePermissions(this.selectedRole.id);
+        }
+        this.isAssigningPermission = false;
+        this.permissionAssignment = {
+          roleId: '',
+          sectionId: '',
+          permissionId: '',
+        };
+      });
   }
 
-  removePermission(roleId: string, sectionId: string, permissionId: string): void {
+  removePermission(
+    roleId: string,
+    sectionId: string,
+    permissionId: string,
+  ): void {
     if (!confirm('Are you sure you want to remove this permission?')) return;
-    
-    this.roleService.removePermissionFromRole(roleId, sectionId, permissionId).subscribe(() => {
-      if (this.selectedRole) {
-        this.loadRolePermissions(this.selectedRole.id);
-      }
-    });
+
+    this.roleService
+      .removePermissionFromRole(roleId, sectionId, permissionId)
+      .subscribe(() => {
+        if (this.selectedRole) {
+          this.loadRolePermissions(this.selectedRole.id);
+        }
+      });
   }
 
   // Permission Management
   loadPermissions(): void {
-    this.permissionService.getAllPermissions().subscribe(perms => this.permissions = perms);
+    this.permissionService
+      .getAllPermissions()
+      .subscribe((perms) => (this.permissions = perms));
   }
 
   selectPermission(permission: Permission): void {
@@ -250,27 +338,31 @@ export class RolesAndPermissionsComponent implements OnInit {
 
   createPermission(): void {
     if (!this.newPermission.name) return;
-    
-    this.permissionService.createPermission(this.newPermission).subscribe(() => {
-      this.loadPermissions();
-      this.cancelAllEdits();
-    });
+
+    this.permissionService
+      .createPermission(this.newPermission)
+      .subscribe(() => {
+        this.loadPermissions();
+        this.cancelAllEdits();
+      });
   }
 
   updatePermission(): void {
     if (!this.selectedPermission) return;
-    
-    this.permissionService.updatePermission(this.selectedPermission.id, {
-      name: this.selectedPermission.name
-    }).subscribe(() => {
-      this.loadPermissions();
-      this.cancelAllEdits();
-    });
+
+    this.permissionService
+      .updatePermission(this.selectedPermission.id, {
+        name: this.selectedPermission.name,
+      })
+      .subscribe(() => {
+        this.loadPermissions();
+        this.cancelAllEdits();
+      });
   }
 
   deletePermission(permissionId: string): void {
     if (!confirm('Are you sure you want to delete this permission?')) return;
-    
+
     this.permissionService.deletePermission(permissionId).subscribe(() => {
       this.loadPermissions();
       this.cancelAllEdits();
@@ -279,7 +371,9 @@ export class RolesAndPermissionsComponent implements OnInit {
 
   // Section Management
   loadSections(): void {
-    this.permissionService.getAllSections().subscribe(sects => this.sections = sects);
+    this.permissionService
+      .getAllSections()
+      .subscribe((sects) => (this.sections = sects));
   }
 
   selectSection(section: Section): void {
@@ -295,7 +389,7 @@ export class RolesAndPermissionsComponent implements OnInit {
 
   createSection(): void {
     if (!this.newSection.name) return;
-    
+
     this.permissionService.createSection(this.newSection).subscribe(() => {
       this.loadSections();
       this.cancelAllEdits();
@@ -304,18 +398,20 @@ export class RolesAndPermissionsComponent implements OnInit {
 
   updateSection(): void {
     if (!this.selectedSection) return;
-    
-    this.permissionService.updateSection(this.selectedSection.id, {
-      name: this.selectedSection.name
-    }).subscribe(() => {
-      this.loadSections();
-      this.cancelAllEdits();
-    });
+
+    this.permissionService
+      .updateSection(this.selectedSection.id, {
+        name: this.selectedSection.name,
+      })
+      .subscribe(() => {
+        this.loadSections();
+        this.cancelAllEdits();
+      });
   }
 
   deleteSection(sectionId: string): void {
     if (!confirm('Are you sure you want to delete this section?')) return;
-    
+
     this.permissionService.deleteSection(sectionId).subscribe(() => {
       this.loadSections();
       this.cancelAllEdits();
@@ -323,8 +419,13 @@ export class RolesAndPermissionsComponent implements OnInit {
   }
 
   // Helper methods
-  getPermissionsAsArray(permissions?: { [section: string]: string[] }): { section: string, perms: string[] }[] {
+  getPermissionsAsArray(permissions?: {
+    [section: string]: string[];
+  }): { section: string; perms: string[] }[] {
     if (!permissions) return [];
-    return Object.entries(permissions).map(([section, perms]) => ({ section, perms }));
+    return Object.entries(permissions).map(([section, perms]) => ({
+      section,
+      perms,
+    }));
   }
 }

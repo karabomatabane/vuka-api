@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"vuka-api/pkg/config"
 	"vuka-api/pkg/httpx"
-	"vuka-api/pkg/models/db"
 	"vuka-api/pkg/models/user"
 	"vuka-api/pkg/services"
 
@@ -52,26 +51,6 @@ func (uc *UserController) UpdateUserRole(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	httpx.WriteJSON(w, http.StatusOK, updatedUser)
-}
-
-func (uc *UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var newUser db.User
-	if err := httpx.ParseBody(r, &newUser); err != nil {
-		httpx.WriteErrorJSON(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	validate := validator.New()
-	if err := validate.Struct(newUser); err != nil {
-		httpx.WriteErrorJSON(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if err := uc.userService.CreateUser(&newUser); err != nil {
-		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	httpx.WriteJSON(w, http.StatusCreated, newUser)
 }
 
 func (uc *UserController) UpdateUser(w http.ResponseWriter, r *http.Request) {

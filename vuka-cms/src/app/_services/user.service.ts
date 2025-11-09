@@ -13,16 +13,13 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
+  // User management - Note: User creation is handled through AuthService.register()
   getAllUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.apiUrl);
   }
 
   getUserById(id: string): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/${id}`);
-  }
-
-  createUser(user: Partial<User>): Observable<User> {
-    return this.http.post<User>(this.apiUrl, user);
   }
 
   updateUser(id: string, user: Partial<User>): Observable<User> {

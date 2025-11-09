@@ -22,6 +22,10 @@ export class AuthenticationService {
       }));
   }
 
+  register(username: string, password: string, confirmPassword: string, roleId: string) {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/register`, { username, password, confirmPassword, roleId });
+  }
+
   logout() {
     localStorage.removeItem('currentUser');
     this.currentUser.set(null);

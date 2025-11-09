@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"vuka-api/pkg/config"
 	"vuka-api/pkg/httpx"
@@ -98,7 +97,6 @@ func (pc *PermissionController) DeletePermission(w http.ResponseWriter, r *http.
 // Section CRUD
 func (pc *PermissionController) CreateSection(w http.ResponseWriter, r *http.Request) {
 	var section db.Section
-	fmt.Println("Creating")
 	if err := httpx.ParseBody(r, &section); err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusBadRequest)
 		return
@@ -114,7 +112,6 @@ func (pc *PermissionController) CreateSection(w http.ResponseWriter, r *http.Req
 
 func (pc *PermissionController) GetAllSections(w http.ResponseWriter, _ *http.Request) {
 	sections, err := pc.permissionService.GetAllSections()
-	fmt.Println("Getting")
 	if err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
 		return
