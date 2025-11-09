@@ -63,6 +63,7 @@ func main() {
 	routes.RegisterSourceRoutes(router)
 	routes.RegisterCategoryRoutes(router)
 	routes.RegisterDirectoryRoutes(router)
+	routes.RegisterPermissionRoutes(router)
 
 	// Migrate sources from CSV on startup
 	// MigrateSources(serviceManager.Source, "bin/sources.csv")
@@ -72,7 +73,7 @@ func main() {
 
 	// Schedule RSS ingestion to run every hour
 	if err := cronService.ScheduleRSSIngestion(); err != nil {
-	    log.Printf("Failed to schedule RSS ingestion: %v", err)
+		log.Printf("Failed to schedule RSS ingestion: %v", err)
 	}
 
 	// Start the cron service
@@ -82,7 +83,7 @@ func main() {
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:4200"},
 
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 
 		AllowedHeaders: []string{"Content-Type", "Authorization"},
 

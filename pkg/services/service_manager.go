@@ -7,15 +7,16 @@ import (
 )
 
 type Services struct {
-	Article   *ArticleService
-	User      *UserService
-	Auth      *AuthService
-	Role      *RoleService
-	Rss       *RssService
-	Source    *SourceService
-	Directory *DirectoryService
-	Cron      *CronService
-	Category  *CategoryService
+	Article    *ArticleService
+	User       *UserService
+	Auth       *AuthService
+	Role       *RoleService
+	Rss        *RssService
+	Source     *SourceService
+	Directory  *DirectoryService
+	Cron       *CronService
+	Category   *CategoryService
+	Permission *PermissionService
 }
 
 func NewServices(db *gorm.DB) *Services {
@@ -28,14 +29,15 @@ func NewServices(db *gorm.DB) *Services {
 	directoryService := NewDirectoryService(repos.Directory)
 
 	return &Services{
-		Article:   articleService,
-		User:      NewUserService(repos),
-		Auth:      NewAuthService(repos),
-		Role:      NewRoleService(repos),
-		Rss:       rssService,
-		Source:    sourceService,
-		Cron:      NewCronService(rssService, sourceService),
-		Category:  categoryService,
-		Directory: directoryService,
+		Article:    articleService,
+		User:       NewUserService(repos),
+		Auth:       NewAuthService(repos),
+		Role:       NewRoleService(repos),
+		Rss:        rssService,
+		Source:     sourceService,
+		Cron:       NewCronService(rssService, sourceService),
+		Category:   categoryService,
+		Directory:  directoryService,
+		Permission: NewPermissionService(repos),
 	}
 }

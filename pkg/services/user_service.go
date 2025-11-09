@@ -47,3 +47,19 @@ func (s *UserService) UpdateUserRole(body user.UpdateUserRoleBody) (*db.User, er
 	}
 	return updatedUser, nil
 }
+
+func (s *UserService) CreateUser(user *db.User) error {
+	return s.repos.User.Create(user)
+}
+
+func (s *UserService) UpdateUser(user *db.User) error {
+	return s.repos.User.Update(user)
+}
+
+func (s *UserService) DeleteUser(id string) error {
+	userID, err := uuid.Parse(id)
+	if err != nil {
+		return err
+	}
+	return s.repos.User.Delete(userID)
+}

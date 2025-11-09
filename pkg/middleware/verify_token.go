@@ -62,7 +62,7 @@ func VerifyToken(next http.Handler) http.Handler {
 	})
 }
 
-func VerifyTokenAndAdmin(next http.HandlerFunc) http.HandlerFunc {
+func VerifyTokenAndAdminFunc(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, claims, err := authenticateToken(r)
 		if err != nil {
@@ -82,3 +82,23 @@ func VerifyTokenAndAdmin(next http.HandlerFunc) http.HandlerFunc {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 }
+
+func VerifyTokenAndAdmin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, claims, err := authenticateToken(r)
+		if err != nil {
+			http.Error(w, "Invalid token", http.StatusForbidden)
+			return
+		}
+
+		role, ok := claims.(jwt.MapClaims)["role"].(string)
+		if !ok || role != "admin" {
+			http.Error(w, "Admin resource! Access denied.", http.StatusForbidden)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), UserContextKey, claims)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+

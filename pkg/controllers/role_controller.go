@@ -107,3 +107,43 @@ func (c *RoleController) Delete(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (c *RoleController) AssignPermissionToRole(w http.ResponseWriter, r *http.Request) {
+	var request db.RoleSectionPermission
+	if err := httpx.ParseBody(r, &request); err != nil {
+		httpx.WriteErrorJSON(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := c.roleService.AssignPermissionToRole(&request); err != nil {
+		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpx.WriteJSON(w, http.StatusCreated, request)
+}
+
+func (c *RoleController) RemovePermissionFromRole(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	roleID := vars["roleId"]
+	sectionID := vars["sectionId"]
+	permissionID := vars["permissionId"]
+
+	if err := c.roleService.RemovePermissionFromRole(roleID, sectionID, permissionID); err != nil {
+		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (c *RoleController) GetRolePermissions(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	permissions, err := c.roleService.GetRolePermissions(vars["id"])
+	if err != nil {
+		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	httpx.WriteJSON(w, http.StatusOK, permissions)
+}

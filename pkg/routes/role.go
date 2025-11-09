@@ -1,35 +1,38 @@
 package routes
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
 	"vuka-api/pkg/controllers"
 	"vuka-api/pkg/middleware"
+
+	"github.com/gorilla/mux"
 )
 
 var RegisterRoleRoutes = func(router *mux.Router) {
 	roleController := controllers.NewRoleController()
 
-	// Public routes (no authentication required)
 	roleRouter := router.PathPrefix("/role").Subrouter()
-	roleRouter.HandleFunc("", roleController.Create).
-		Methods(http.MethodPost)
-	roleRouter.HandleFunc("", roleController.GetAll)
+	
+	// Public routes (no authentication required)
+	roleRouter.HandleFunc("", roleController.GetAll).
+		Methods(http.MethodGet)
 	roleRouter.HandleFunc("/{id}", roleController.GetById).
 		Methods(http.MethodGet)
 	roleRouter.HandleFunc("/{id}/permissions", roleController.GetWithPermissions).
 		Methods(http.MethodGet)
 
-	// Protected routes (authentication required)
-	protectedRouter := roleRouter.PathPrefix("/").Subrouter()
-	protectedRouter.Use(func(next http.Handler) http.Handler {
-		return middleware.VerifyTokenAndAdmin(func(w http.ResponseWriter, r *http.Request) {
-			next.ServeHTTP(w, r)
-		})
-	})
-	// Admin-only routes for role management
-	protectedRouter.HandleFunc("/{id}", roleController.Update).
+	// Protected routes (admin only)
+	roleRouter.HandleFunc("", middleware.VerifyTokenAndAdminFunc(roleController.Create)).
+		Methods(http.MethodPost)
+	roleRouter.HandleFunc("/{id}", middleware.VerifyTokenAndAdminFunc(roleController.Update)).
 		Methods(http.MethodPatch)
-	protectedRouter.HandleFunc("/{id}", roleController.Delete).
+	roleRouter.HandleFunc("/{id}", middleware.VerifyTokenAndAdminFunc(roleController.Delete)).
+		Methods(http.MethodDelete)
+
+	// Role permission management (admin only)
+	roleRouter.HandleFunc("/permissions", middleware.VerifyTokenAndAdminFunc(roleController.AssignPermissionToRole)).
+		Methods(http.MethodPost)
+	roleRouter.HandleFunc("/{roleId}/permissions/{sectionId}/{permissionId}",
+		middleware.VerifyTokenAndAdminFunc(roleController.RemovePermissionFromRole)).
 		Methods(http.MethodDelete)
 }

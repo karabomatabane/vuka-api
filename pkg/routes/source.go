@@ -19,11 +19,7 @@ var RegisterSourceRoutes = func(router *mux.Router) {
 
 	// Protected routes (authentication required)
 	protectedRouter := sourceRouter.PathPrefix("/").Subrouter()
-	protectedRouter.Use(func(next http.Handler) http.Handler {
-		return middleware.VerifyTokenAndAdmin(func(w http.ResponseWriter, r *http.Request) {
-			next.ServeHTTP(w, r)
-		})
-	})
+	protectedRouter.Use(middleware.VerifyTokenAndAdmin)
 	// Admin-only routes for source management
 	protectedRouter.HandleFunc("/{id}", sourceController.UpdateSource).Methods(http.MethodPatch)
 	protectedRouter.HandleFunc("/{id}", sourceController.DeleteSource).Methods(http.MethodDelete)

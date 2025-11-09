@@ -42,6 +42,6 @@ func (r *userRepository) Delete(id uuid.UUID) error {
 
 func (r *userRepository) GetAll() ([]db.User, error) {
 	var users []db.User
-	err := r.db.Find(&users).Error
+	err := r.db.Preload("Role").Find(&users).Error
 	return users, err
 }

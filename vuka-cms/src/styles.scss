@@ -196,7 +196,7 @@ figure {
   margin: 1rem auto;
 }
 
-.directories-header {
+.section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -207,6 +207,10 @@ figure {
       margin: 4px 0 0 0;
     }
   }
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
 }
 
 ng-lottie {

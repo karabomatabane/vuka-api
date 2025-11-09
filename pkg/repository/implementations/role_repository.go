@@ -1,10 +1,11 @@
 package implementations
 
 import (
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"vuka-api/pkg/models/db"
 	"vuka-api/pkg/repository/contracts"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type roleRepository struct {
@@ -40,7 +41,9 @@ func (r *roleRepository) GetWithPermissions(id uuid.UUID) (*db.Role, error) {
 
 func (r *roleRepository) GetAll() ([]db.Role, error) {
 	var roles []db.Role
-	err := r.db.Find(&roles).Error
+	err := r.db.Preload("RoleSectionPermissions.Permission").
+		Preload("RoleSectionPermissions.Section").
+		Find(&roles).Error
 	return roles, err
 }
 

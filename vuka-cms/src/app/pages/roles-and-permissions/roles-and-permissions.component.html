@@ -1,1 +1,666 @@
-<h1>Roles and Permissions</h1>
+<div class="container-fluid p-4">
+  <h1 class="mb-4">User, Role & Permission Management</h1>
+
+  <mat-tab-group>
+    <!-- Users Tab -->
+    <mat-tab label="Users">
+      <div class="tab-content">
+        <div class="row mt-3">
+          <div class="col-md-7">
+            <div class="section-header">
+              <h2 class="mb-0">Users</h2>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="startCreatingUser()"
+              >
+                <mat-icon>add</mat-icon> Add User
+              </button>
+            </div>
+            <table
+              mat-table
+              [dataSource]="users"
+              class="mat-elevation-z2 w-100"
+            >
+              <ng-container matColumnDef="username">
+                <th mat-header-cell *matHeaderCellDef>Username</th>
+                <td mat-cell *matCellDef="let user">{{ user.username }}</td>
+              </ng-container>
+              <ng-container matColumnDef="role">
+                <th mat-header-cell *matHeaderCellDef>Role</th>
+                <td mat-cell *matCellDef="let user">
+                  {{ user.role?.name || "No Role" }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let user">
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="selectUser(user)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteUser(user.id)"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+              <tr
+                mat-header-row
+                *matHeaderRowDef="['username', 'role', 'actions']"
+              ></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: ['username', 'role', 'actions']"
+              ></tr>
+            </table>
+          </div>
+
+          <div class="col-md-5">
+            <!-- Create User Form -->
+            @if (isCreatingUser) {
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>Create New User</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <form (ngSubmit)="createUser()" class="user-form">
+                    <mat-form-field class="w-100">
+                      <mat-label>Username</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="newUser.username"
+                        name="username"
+                        required
+                      />
+                    </mat-form-field>
+                    <mat-form-field class="w-100">
+                      <mat-label>Password</mat-label>
+                      <input
+                        matInput
+                        type="password"
+                        [(ngModel)]="newUser.password"
+                        name="password"
+                        required
+                      />
+                    </mat-form-field>
+                    <mat-form-field class="w-100">
+                      <mat-label>Role</mat-label>
+                      <mat-select
+                        [(ngModel)]="newUser.roleId"
+                        name="roleId"
+                        required
+                      >
+                        @for (role of roles; track role) {
+                          <mat-option [value]="role.id">{{
+                            role.name
+                          }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                    <div class="d-flex gap-2">
+                      <button mat-raised-button color="primary" type="submit">
+                        Create User
+                      </button>
+                      <button
+                        mat-button
+                        type="button"
+                        (click)="cancelAllEdits()"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </mat-card-content>
+              </mat-card>
+            }
+
+            <!-- Edit User Form -->
+            @if (selectedUser && !isCreatingUser) {
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>Edit User</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <form (ngSubmit)="updateUser()">
+                    <mat-form-field class="w-100">
+                      <mat-label>Username</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="selectedUser.username"
+                        name="username"
+                        required
+                      />
+                    </mat-form-field>
+                    <mat-form-field class="w-100">
+                      <mat-label>Role</mat-label>
+                      <mat-select
+                        [(ngModel)]="selectedUser.roleId"
+                        name="roleId"
+                        required
+                      >
+                        @for (role of roles; track role) {
+                          <mat-option [value]="role.id">{{
+                            role.name
+                          }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                    <div class="d-flex gap-2">
+                      <button mat-raised-button color="primary" type="submit">
+                        Update User
+                      </button>
+                      <button
+                        mat-button
+                        type="button"
+                        (click)="cancelAllEdits()"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Roles Tab -->
+    <mat-tab label="Roles">
+      <div class="tab-content">
+        <div class="row mt-3">
+          <div class="col-md-5">
+            <div class="section-header">
+              <h2 class="mb-0">Roles</h2>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="startCreatingRole()"
+              >
+                <mat-icon>add</mat-icon> Add Role
+              </button>
+            </div>
+            <table
+              mat-table
+              [dataSource]="roles"
+              class="mat-elevation-z2 w-100"
+            >
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Role Name</th>
+                <td mat-cell *matCellDef="let role">{{ role.name }}</td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let role">
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="selectRole(role)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteRole(role.id)"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="['name', 'actions']"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: ['name', 'actions']"
+              ></tr>
+            </table>
+          </div>
+
+          <div class="col-md-7">
+            <!-- Create Role Form -->
+            @if (isCreatingRole) {
+              <mat-card class="mb-3">
+                <mat-card-header>
+                  <mat-card-title>Create New Role</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <form (ngSubmit)="createRole()">
+                    <mat-form-field class="w-100">
+                      <mat-label>Role Name</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="newRole.name"
+                        name="name"
+                        required
+                      />
+                    </mat-form-field>
+                    <div class="d-flex gap-2">
+                      <button mat-raised-button color="primary" type="submit">
+                        Create Role
+                      </button>
+                      <button
+                        mat-button
+                        type="button"
+                        (click)="cancelAllEdits()"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </mat-card-content>
+              </mat-card>
+            }
+
+            <!-- Edit Role Form -->
+            @if (selectedRole && !isCreatingRole) {
+              <mat-card class="mb-3">
+                <mat-card-header>
+                  <mat-card-title>Edit Role</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <form (ngSubmit)="updateRole()">
+                    <mat-form-field class="w-100">
+                      <mat-label>Role Name</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="selectedRole.name"
+                        name="name"
+                        required
+                      />
+                    </mat-form-field>
+                    <div class="d-flex gap-2">
+                      <button mat-raised-button color="primary" type="submit">
+                        Update Role
+                      </button>
+                      <button
+                        mat-button
+                        type="button"
+                        (click)="cancelAllEdits()"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </mat-card-content>
+              </mat-card>
+            }
+
+            <!-- Role Permissions -->
+            @if (selectedRole && selectedRolePermissions) {
+              <mat-card>
+                <mat-card-header class="permissions-header">
+                  <mat-card-title
+                    >Permissions for {{ selectedRole.name }}</mat-card-title
+                  >
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="startAssigningPermission(selectedRole.id)"
+                  >
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </mat-card-header>
+                <mat-card-content>
+                  @if (isAssigningPermission) {
+                    <div class="mb-3 p-3 border rounded">
+                      <h5>Assign New Permission</h5>
+                      <form (ngSubmit)="assignPermission()">
+                        <div class="row">
+                          <div class="col-md-6">
+                            <mat-form-field class="w-100">
+                              <mat-label>Section</mat-label>
+                              <mat-select
+                                [(ngModel)]="permissionAssignment.sectionId"
+                                name="sectionId"
+                                required
+                              >
+                                @for (section of sections; track section) {
+                                  <mat-option [value]="section.id">{{
+                                    section.name
+                                  }}</mat-option>
+                                }
+                              </mat-select>
+                            </mat-form-field>
+                          </div>
+                          <div class="col-md-6">
+                            <mat-form-field class="w-100">
+                              <mat-label>Permission</mat-label>
+                              <mat-select
+                                [(ngModel)]="permissionAssignment.permissionId"
+                                name="permissionId"
+                                required
+                              >
+                                @for (perm of permissions; track perm) {
+                                  <mat-option [value]="perm.id">{{
+                                    perm.name
+                                  }}</mat-option>
+                                }
+                              </mat-select>
+                            </mat-form-field>
+                          </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                          <button
+                            mat-raised-button
+                            color="primary"
+                            type="submit"
+                          >
+                            Assign
+                          </button>
+                          <button
+                            mat-button
+                            type="button"
+                            (click)="isAssigningPermission = false"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  }
+                  @if (
+                    getPermissionsAsArray(selectedRolePermissions.permissions)
+                      .length === 0
+                  ) {
+                    <div class="alert alert-info">
+                      No permissions assigned yet.
+                    </div>
+                  }
+                  @for (
+                    item of getPermissionsAsArray(
+                      selectedRolePermissions.permissions
+                    );
+                    track item
+                  ) {
+                    <div class="mb-3">
+                      <h5 class="border-bottom pb-2">{{ item.section }}</h5>
+                      <mat-chip-set>
+                        @for (perm of item.perms; track perm) {
+                          <mat-chip
+                            [removable]="true"
+                            (removed)="
+                              removePermission(
+                                selectedRole!.id,
+                                item.section,
+                                perm
+                              )
+                            "
+                          >
+                            {{ perm }}
+                            <mat-icon matChipRemove>cancel</mat-icon>
+                          </mat-chip>
+                        }
+                      </mat-chip-set>
+                    </div>
+                  }
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Permissions Tab -->
+    <mat-tab label="Permissions">
+      <div class="tab-content">
+        <div class="row mt-3">
+          <div class="col-md-7">
+            <div class="section-header">
+              <h2 class="mb-0">Permissions</h2>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="startCreatingPermission()"
+              >
+                <mat-icon>add</mat-icon> Add Permission
+              </button>
+            </div>
+            <table
+              mat-table
+              [dataSource]="permissions"
+              class="mat-elevation-z2 w-100"
+            >
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Permission Name</th>
+                <td mat-cell *matCellDef="let perm">{{ perm.name }}</td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let perm">
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="selectPermission(perm)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deletePermission(perm.id)"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="['name', 'actions']"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: ['name', 'actions']"
+              ></tr>
+            </table>
+          </div>
+
+          <div class="col-md-5">
+            <!-- Create Permission Form -->
+            @if (isCreatingPermission) {
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>Create New Permission</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <form (ngSubmit)="createPermission()">
+                    <mat-form-field class="w-100">
+                      <mat-label>Permission Name</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="newPermission.name"
+                        name="name"
+                        required
+                      />
+                      <mat-hint
+                        >Examples: create, read, update, delete</mat-hint
+                      >
+                    </mat-form-field>
+                    <div class="d-flex gap-2">
+                      <button mat-raised-button color="primary" type="submit">
+                        Create Permission
+                      </button>
+                      <button
+                        mat-button
+                        type="button"
+                        (click)="cancelAllEdits()"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </mat-card-content>
+              </mat-card>
+            }
+
+            <!-- Edit Permission Form -->
+            @if (selectedPermission && !isCreatingPermission) {
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>Edit Permission</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <form (ngSubmit)="updatePermission()">
+                    <mat-form-field class="w-100">
+                      <mat-label>Permission Name</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="selectedPermission.name"
+                        name="name"
+                        required
+                      />
+                    </mat-form-field>
+                    <div class="d-flex gap-2">
+                      <button mat-raised-button color="primary" type="submit">
+                        Update Permission
+                      </button>
+                      <button
+                        mat-button
+                        type="button"
+                        (click)="cancelAllEdits()"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Sections Tab -->
+    <mat-tab label="Sections">
+      <div class="tab-content">
+        <div class="row mt-3">
+          <div class="col-md-7">
+            <div class="section-header">
+              <h2 class="mb-0">Sections</h2>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="startCreatingSection()"
+              >
+                <mat-icon>add</mat-icon> Add Section
+              </button>
+            </div>
+            <table
+              mat-table
+              [dataSource]="sections"
+              class="mat-elevation-z2 w-100"
+            >
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Section Name</th>
+                <td mat-cell *matCellDef="let sect">{{ sect.name }}</td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let sect">
+                  <button
+                    mat-icon-button
+                    color="primary"
+                    (click)="selectSection(sect)"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteSection(sect.id)"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="['name', 'actions']"></tr>
+              <tr
+                mat-row
+                *matRowDef="let row; columns: ['name', 'actions']"
+              ></tr>
+            </table>
+          </div>
+
+          <div class="col-md-5">
+            <!-- Create Section Form -->
+            @if (isCreatingSection) {
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>Create New Section</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <form (ngSubmit)="createSection()">
+                    <mat-form-field class="w-100">
+                      <mat-label>Section Name</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="newSection.name"
+                        name="name"
+                        required
+                      />
+                      <mat-hint
+                        >Examples: articles, users, directory, sources</mat-hint
+                      >
+                    </mat-form-field>
+                    <div class="d-flex gap-2">
+                      <button mat-raised-button color="primary" type="submit">
+                        Create Section
+                      </button>
+                      <button
+                        mat-button
+                        type="button"
+                        (click)="cancelAllEdits()"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </mat-card-content>
+              </mat-card>
+            }
+
+            <!-- Edit Section Form -->
+            @if (selectedSection && !isCreatingSection) {
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title>Edit Section</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <form (ngSubmit)="updateSection()">
+                    <mat-form-field class="w-100">
+                      <mat-label>Section Name</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="selectedSection.name"
+                        name="name"
+                        required
+                      />
+                    </mat-form-field>
+                    <div class="d-flex gap-2">
+                      <button mat-raised-button color="primary" type="submit">
+                        Update Section
+                      </button>
+                      <button
+                        mat-button
+                        type="button"
+                        (click)="cancelAllEdits()"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

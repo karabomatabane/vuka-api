@@ -1,0 +1,22 @@
+.permissions-header {
+  align-items: center;
+  gap: 0.5rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  margin-right: 0.5rem !important;
+}
+
+.mat-h2 {
+    margin: 0 !important;
+}
+
+.section-header {
+    margin-top: 16px;
+    align-items: end;
+}
