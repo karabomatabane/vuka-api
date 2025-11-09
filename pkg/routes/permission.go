@@ -13,7 +13,7 @@ var RegisterPermissionRoutes = func(router *mux.Router) {
 
 	// Permission routes
 	permissionRouter := router.PathPrefix("/permission").Subrouter()
-	
+
 	// Public permission routes
 	permissionRouter.HandleFunc("", permissionController.GetAllPermissions).
 		Methods(http.MethodGet)
@@ -30,7 +30,7 @@ var RegisterPermissionRoutes = func(router *mux.Router) {
 
 	// Section routes
 	sectionRouter := router.PathPrefix("/section").Subrouter()
-	
+
 	// Public section routes
 	sectionRouter.HandleFunc("", permissionController.GetAllSections).
 		Methods(http.MethodGet)

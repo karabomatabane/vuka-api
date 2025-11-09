@@ -12,7 +12,7 @@ var RegisterRoleRoutes = func(router *mux.Router) {
 	roleController := controllers.NewRoleController()
 
 	roleRouter := router.PathPrefix("/role").Subrouter()
-	
+
 	// Public routes (no authentication required)
 	roleRouter.HandleFunc("", roleController.GetAll).
 		Methods(http.MethodGet)
