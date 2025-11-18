@@ -17,6 +17,7 @@ type Services struct {
 	Cron       *CronService
 	Category   *CategoryService
 	Permission *PermissionService
+	Newsletter *NewsletterService
 }
 
 func NewServices(db *gorm.DB) *Services {
@@ -39,5 +40,6 @@ func NewServices(db *gorm.DB) *Services {
 		Category:   categoryService,
 		Directory:  directoryService,
 		Permission: NewPermissionService(repos),
+		Newsletter: NewNewsletterService(repos),
 	}
 }

@@ -31,6 +31,7 @@ func main() {
 		&db.User{},
 		&db.RoleSectionPermission{},
 		&db.UserDirectoryMeta{},
+		&db.NewsletterSubscriber{},
 	)
 	if err != nil {
 		fmt.Printf("Migration failed: %v\n", err)

@@ -64,6 +64,7 @@ func main() {
 	routes.RegisterCategoryRoutes(router)
 	routes.RegisterDirectoryRoutes(router)
 	routes.RegisterPermissionRoutes(router)
+	routes.RegisterNewsletterRoutes(router)
 
 	// Migrate sources from CSV on startup
 	// MigrateSources(serviceManager.Source, "bin/sources.csv")

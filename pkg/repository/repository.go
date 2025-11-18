@@ -15,6 +15,7 @@ type Repositories struct {
 	Category   contracts.CategoryRepository
 	Directory  contracts.DirectoryRepository
 	Permission contracts.PermissionRepository
+	Newsletter contracts.NewsletterRepository
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
@@ -26,5 +27,6 @@ func NewRepositories(db *gorm.DB) *Repositories {
 		Category:   implementations.NewCategoryRepository(db),
 		Directory:  implementations.NewDirectoryRepository(db),
 		Permission: implementations.NewPermissionRepository(db),
+		Newsletter: implementations.NewNewsletterRepository(db),
 	}
 }
