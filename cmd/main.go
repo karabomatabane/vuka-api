@@ -69,18 +69,21 @@ func main() {
 
 	// Migrate sources from CSV on startup
 	// MigrateSources(serviceManager.Source, "bin/sources.csv")
+	if len(os.Args) == 1 || os.Args[1] != "--skip-cron" {
+		// Setup and start cron jobs
+		cronService := serviceManager.Cron
 
-	// Setup and start cron jobs
-	cronService := serviceManager.Cron
+		// Schedule RSS ingestion to run every hour
+		if err := cronService.ScheduleRSSIngestion(); err != nil {
+			log.Printf("Failed to schedule RSS ingestion: %v", err)
+		}
 
-	// Schedule RSS ingestion to run every hour
-	if err := cronService.ScheduleRSSIngestion(); err != nil {
-		log.Printf("Failed to schedule RSS ingestion: %v", err)
+		// Start the cron service
+		cronService.Start()
+		log.Println("Cron service started - RSS feeds will be ingested hourly")
+	} else {
+		log.Println("--skip-cron flag passed in. Skipping cron service.")
 	}
-
-	// Start the cron service
-	// cronService.Start()
-	log.Println("Cron service started - RSS feeds will be ingested hourly")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"http://localhost:4200"},
