@@ -1,0 +1,62 @@
+name: Update Postman Collection
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'pkg/routes/**'
+      - 'pkg/controllers/**'
+      - 'cmd/main.go'
+  workflow_dispatch:
+
+jobs:
+  generate-collection:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22'
+    
+    - name: Cache Go modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+    
+    - name: Install dependencies
+      run: go mod download
+    
+    - name: Generate Postman Collection
+      run: make postman
+    
+    - name: Check for changes
+      id: git-check
+      run: |
+        git diff --exit-code vuka-api.postman_collection.json || echo "changed=true" >> $GITHUB_OUTPUT
+    
+    - name: Commit and push if changed
+      if: steps.git-check.outputs.changed == 'true'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add vuka-api.postman_collection.json
+        git commit -m "chore: update Postman collection [skip ci]"
+        git push
+    
+    - name: Upload collection as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: postman-collection
+        path: vuka-api.postman_collection.json
+        retention-days: 30
