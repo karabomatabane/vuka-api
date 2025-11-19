@@ -37,7 +37,7 @@ jobs:
     - name: Build application
       run: |
         CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o vuka-api -ldflags="-s -w" cmd/main.go
-        chmod 750 vuka-api
+        chmod 644 vuka-api
     
     - name: Copy binary to server
       uses: appleboy/scp-action@v0.1.7
@@ -47,15 +47,14 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: 2222
         source: "vuka-api"
-        target: "/tmp/vuka-api-new"
-        strip_components: 0
+        target: "/tmp"
     
     - name: Deploy and restart service
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: 41.71.105.58
         username: yetu
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        key: ${{ secrets.SSH_KEY }}
         port: 2222
         script: |
           # Stop the service
@@ -67,7 +66,7 @@ jobs:
           fi
           
           # Move new binary to final location
-          sudo mv /tmp/vuka-api-new/vuka-api /opt/vuka/vuka-api
+          sudo mv /tmp/vuka-api /opt/vuka/vuka-api
           sudo chmod 750 /opt/vuka/vuka-api
           sudo chown yetu:yetu /opt/vuka/vuka-api
           
