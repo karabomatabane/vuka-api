@@ -16,6 +16,7 @@ type Generator struct {
 	CollectionName string
 	Description    string
 	Version        string
+	bodyGenerator  *BodyGenerator
 }
 
 // NewGenerator creates a new Postman collection generator
@@ -25,6 +26,7 @@ func NewGenerator(baseURL, collectionName string) *Generator {
 		CollectionName: collectionName,
 		Description:    "Auto-generated API collection",
 		Version:        "1.0.0",
+		bodyGenerator:  NewBodyGenerator(),
 	}
 }
 
@@ -41,22 +43,9 @@ func (g *Generator) Generate(router *mux.Router) (*Collection, error) {
 			Schema:      "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 			Version:     g.Version,
 		},
-		Variable: []Variable{
-			{
-				Key:   "baseUrl",
-				Value: g.BaseURL,
-				Type:  "string",
-			},
-			{
-				Key:         "token",
-				Value:       "",
-				Type:        "string",
-				Description: "JWT authentication token",
-			},
-		},
 	}
 
-	// Add auth folder with collection-level auth
+	// Add auth folder with collection-level auth using environment variable
 	collection.Auth = &Auth{
 		Type: "bearer",
 		Bearer: []AuthKeyValue{
@@ -119,7 +108,7 @@ func (g *Generator) createRequest(route RouteInfo) Item {
 		Request: request,
 	}
 
-	// Add test scripts for common patterns
+	// Add test scripts for common patterns - save token to environment
 	if route.Method == "POST" && strings.Contains(route.Path, "/auth/login") {
 		item.Event = []Event{
 			{
@@ -127,9 +116,11 @@ func (g *Generator) createRequest(route RouteInfo) Item {
 				Script: Script{
 					Type: "text/javascript",
 					Exec: []string{
+						"// Save token to environment variable",
 						"var jsonData = pm.response.json();",
-						"if (jsonData.token) {",
-						"    pm.collectionVariables.set('token', jsonData.token);",
+						"if (jsonData.accessToken) {",
+						"    pm.environment.set('token', jsonData.accessToken);",
+						"    console.log('Access token saved to environment');",
 						"}",
 					},
 				},
@@ -198,56 +189,13 @@ func (g *Generator) createURL(route RouteInfo) URL {
 	return url
 }
 
-// createBody creates a sample body for a request
+// createBody creates a sample body for a request using reflection
 func (g *Generator) createBody(route RouteInfo) *Body {
-	var exampleBody string
+	exampleBody := g.bodyGenerator.GenerateBody(route)
 
-	// Generate example bodies based on path
-	if strings.Contains(route.Path, "/auth/register") {
-		exampleBody = `{
-  "email": "user@example.com",
-  "password": "SecurePassword123!",
-  "name": "John Doe"
-}`
-	} else if strings.Contains(route.Path, "/auth/login") {
-		exampleBody = `{
-  "email": "user@example.com",
-  "password": "SecurePassword123!"
-}`
-	} else if strings.Contains(route.Path, "/article") {
-		if route.Method == "POST" {
-			exampleBody = `{
-  "title": "Article Title",
-  "content": "Article content goes here",
-  "categoryId": "category-uuid"
-}`
-		} else if route.Method == "PUT" || route.Method == "PATCH" {
-			exampleBody = `{
-  "title": "Updated Article Title",
-  "content": "Updated content"
-}`
-		}
-	} else if strings.Contains(route.Path, "/user") && route.Method == "PATCH" {
-		exampleBody = `{
-  "name": "Updated Name",
-  "email": "updated@example.com"
-}`
-	} else if strings.Contains(route.Path, "/role") {
-		if route.Method == "POST" {
-			exampleBody = `{
-  "name": "Role Name",
-  "description": "Role description"
-}`
-		} else if route.Method == "PATCH" {
-			exampleBody = `{
-  "name": "Updated Role Name"
-}`
-		}
-	} else {
-		// Generic body
-		exampleBody = `{
-  "key": "value"
-}`
+	// Fallback for special cases not covered by struct mapping
+	if exampleBody == "{\n  \"key\": \"value\"\n}" {
+		exampleBody = g.createFallbackBody(route)
 	}
 
 	return &Body{
@@ -259,6 +207,35 @@ func (g *Generator) createBody(route RouteInfo) *Body {
 			},
 		},
 	}
+}
+
+// createFallbackBody handles special cases not in struct models
+func (g *Generator) createFallbackBody(route RouteInfo) string {
+	path := route.Path
+
+	// Special case handlers
+	if strings.Contains(path, "/role") && strings.Contains(path, "/permissions") && route.Method == "POST" {
+		return `{
+  "roleId": "00000000-0000-0000-0000-000000000000",
+  "sectionId": "00000000-0000-0000-0000-000000000000",
+  "permissionId": "00000000-0000-0000-0000-000000000000"
+}`
+	} else if strings.Contains(path, "/user") && strings.Contains(path, "/role") {
+		return `{
+  "roleId": "00000000-0000-0000-0000-000000000000"
+}`
+	} else if strings.Contains(path, "/article/rss") {
+		return `{
+  "rssFeedUrl": "https://example.com/feed.xml"
+}`
+	} else if strings.Contains(path, "/source") && strings.Contains(path, "/ingest") {
+		return `{}`
+	}
+
+	// Default fallback
+	return `{
+  "key": "value"
+}`
 }
 
 // SaveToFile saves the collection to a JSON file
