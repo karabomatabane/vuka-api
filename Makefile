@@ -9,17 +9,17 @@ help: ## Show this help message
 postman: ## Generate Postman collection for local development
 	@echo "Generating Postman collection..."
 	@go run cmd/generate-postman/main.go --generate-postman --output=vuka-api.postman_collection.json --base-url=http://localhost:8080
-	@echo "✅ Collection generated: vuka-api.postman_collection.json"
+	@echo "Collection generated: vuka-api.postman_collection.json"
 
 postman-prod: ## Generate Postman collection for production
 	@echo "Generating Postman collection for production..."
 	@go run cmd/generate-postman/main.go --generate-postman --output=vuka-api-prod.postman_collection.json --base-url=https://api.vuka.com
-	@echo "✅ Collection generated: vuka-api-prod.postman_collection.json"
+	@echo "Collection generated: vuka-api-prod.postman_collection.json"
 
 build: ## Build the application
 	@echo "Building application..."
 	@go build -o bin/vuka-api cmd/main.go
-	@echo "✅ Build complete: bin/vuka-api"
+	@echo "Build complete: bin/vuka-api"
 
 run: ## Run the application
 	@go run cmd/main.go
@@ -30,4 +30,4 @@ test: ## Run tests
 clean: ## Clean build artifacts
 	@rm -rf bin/
 	@rm -f *.postman_collection.json
-	@echo "✅ Cleaned build artifacts"
+	@echo "Cleaned build artifacts"

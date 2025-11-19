@@ -1,0 +1,97 @@
+name: Deploy to Production
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Triggers on version tags like v1.0.0, v2.1.3, etc.
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+    
+    - name: Cache Go modules
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+    
+    - name: Install dependencies
+      run: go mod download
+    
+    - name: Build application
+      run: |
+        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o vuka-api -ldflags="-s -w" cmd/main.go
+        chmod 750 vuka-api
+    
+    - name: Copy binary to server
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: 41.71.105.58
+        username: yetu
+        key: ${{ secrets.SSH_KEY }}
+        port: 2222
+        source: "vuka-api"
+        target: "/tmp/vuka-api-new"
+        strip_components: 0
+    
+    - name: Deploy and restart service
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: 41.71.105.58
+        username: yetu
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: 2222
+        script: |
+          # Stop the service
+          sudo systemctl stop vuka-api
+          
+          # Backup current binary
+          if [ -f /opt/vuka/vuka-api ]; then
+            sudo cp /opt/vuka/vuka-api /opt/vuka/vuka-api.backup.$(date +%Y%m%d_%H%M%S)
+          fi
+          
+          # Move new binary to final location
+          sudo mv /tmp/vuka-api-new/vuka-api /opt/vuka/vuka-api
+          sudo chmod 750 /opt/vuka/vuka-api
+          sudo chown yetu:yetu /opt/vuka/vuka-api
+          
+          # Start the service
+          sudo systemctl start vuka-api
+          
+          # Wait and verify service started
+          sleep 5
+          
+          # Check service status
+          if sudo systemctl is-active --quiet vuka-api; then
+            echo "Deployment successful - vuka-api service is running"
+            sudo systemctl status vuka-api --no-pager
+          else
+            echo "Deployment failed - vuka-api service is not running"
+            sudo journalctl -u vuka-api -n 50 --no-pager
+            exit 1
+          fi
+    
+    - name: Send deployment notification
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "Deployment of ${{ github.ref_name }} to production completed successfully"
+        else
+          echo "Deployment of ${{ github.ref_name }} to production failed"
+        fi
