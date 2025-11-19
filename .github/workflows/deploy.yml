@@ -68,8 +68,8 @@ jobs:
           
           # Move new binary to final location
           echo "${{ secrets.YETU_PASS }}" | sudo -S mv /tmp/vuka-api /opt/vuka/vuka-api
-          echo "${{ secrets.YETU_PASS }}" | sudo -S chmod 750 /opt/vuka/vuka-api
           echo "${{ secrets.YETU_PASS }}" | sudo -S chown yetu:yetu /opt/vuka/vuka-api
+          echo "${{ secrets.YETU_PASS }}" | sudo -S chmod 755 /opt/vuka/vuka-api
           
           # Start the service
           echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl start vuka
