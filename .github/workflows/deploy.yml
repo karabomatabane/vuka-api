@@ -59,7 +59,7 @@ jobs:
         port: 2222
         script: |
           # Stop the service
-          echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl stop vuka-api
+          echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl stop vuka
           
           # Backup current binary
           if [ -f /opt/vuka/vuka-api ]; then
@@ -72,18 +72,18 @@ jobs:
           echo "${{ secrets.YETU_PASS }}" | sudo -S chown yetu:yetu /opt/vuka/vuka-api
           
           # Start the service
-          echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl start vuka-api
+          echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl start vuka
           
           # Wait and verify service started
           sleep 5
           
           # Check service status
-          if echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl is-active --quiet vuka-api; then
-            echo "Deployment successful - vuka-api service is running"
-            echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl status vuka-api --no-pager
+          if echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl is-active --quiet vuka; then
+            echo "Deployment successful - vuka service is running"
+            echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl status vuka --no-pager
           else
-            echo "Deployment failed - vuka-api service is not running"
-            echo "${{ secrets.YETU_PASS }}" | sudo -S journalctl -u vuka-api -n 50 --no-pager
+            echo "Deployment failed - vuka service is not running"
+            echo "${{ secrets.YETU_PASS }}" | sudo -S journalctl -u vuka -n 50 --no-pager
             exit 1
           fi
     
