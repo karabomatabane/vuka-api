@@ -48,6 +48,7 @@ jobs:
         port: 2222
         source: "vuka-api"
         target: "/tmp"
+        debug: true
     
     - name: Deploy and restart service
       uses: appleboy/ssh-action@v1.0.3
@@ -58,31 +59,31 @@ jobs:
         port: 2222
         script: |
           # Stop the service
-          sudo systemctl stop vuka-api
+          echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl stop vuka-api
           
           # Backup current binary
           if [ -f /opt/vuka/vuka-api ]; then
-            sudo cp /opt/vuka/vuka-api /opt/vuka/vuka-api.backup.$(date +%Y%m%d_%H%M%S)
+            echo "${{ secrets.YETU_PASS }}" | sudo -S cp /opt/vuka/vuka-api /opt/vuka/vuka-api.backup.$(date +%Y%m%d_%H%M%S)
           fi
           
           # Move new binary to final location
-          sudo mv /tmp/vuka-api /opt/vuka/vuka-api
-          sudo chmod 750 /opt/vuka/vuka-api
-          sudo chown yetu:yetu /opt/vuka/vuka-api
+          echo "${{ secrets.YETU_PASS }}" | sudo -S mv /tmp/vuka-api /opt/vuka/vuka-api
+          echo "${{ secrets.YETU_PASS }}" | sudo -S chmod 750 /opt/vuka/vuka-api
+          echo "${{ secrets.YETU_PASS }}" | sudo -S chown yetu:yetu /opt/vuka/vuka-api
           
           # Start the service
-          sudo systemctl start vuka-api
+          echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl start vuka-api
           
           # Wait and verify service started
           sleep 5
           
           # Check service status
-          if sudo systemctl is-active --quiet vuka-api; then
+          if echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl is-active --quiet vuka-api; then
             echo "Deployment successful - vuka-api service is running"
-            sudo systemctl status vuka-api --no-pager
+            echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl status vuka-api --no-pager
           else
             echo "Deployment failed - vuka-api service is not running"
-            sudo journalctl -u vuka-api -n 50 --no-pager
+            echo "${{ secrets.YETU_PASS }}" | sudo -S journalctl -u vuka-api -n 50 --no-pager
             exit 1
           fi
     
