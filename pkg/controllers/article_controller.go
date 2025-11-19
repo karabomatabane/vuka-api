@@ -6,20 +6,21 @@ import (
 	"vuka-api/pkg/httpx"
 	"vuka-api/pkg/models/db"
 	"vuka-api/pkg/services"
+	"vuka-api/pkg/utils"
 
 	"github.com/gorilla/mux"
 )
 
 type ArticleController struct {
 	articleService *services.ArticleService
-	rssService *services.RssService
+	rssService     *services.RssService
 }
 
 func NewArticleController() *ArticleController {
 	serviceManager := services.NewServices(config.GetDB())
 	return &ArticleController{
 		articleService: serviceManager.Article,
-		rssService: serviceManager.Rss,
+		rssService:     serviceManager.Rss,
 	}
 }
 
@@ -39,13 +40,36 @@ func (fc *ArticleController) GetArticle(w http.ResponseWriter, r *http.Request) 
 func (fc *ArticleController) GetAllArticles(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	articles, err := fc.articleService.GetAllArticles()
+	// Get pagination parameters from query string
+	pageParam := r.URL.Query().Get("page")
+	pageSizeParam := r.URL.Query().Get("pageSize")
+
+	// Parse pagination parameters
+	paginationParams := utils.GetPaginationParams(pageParam, pageSizeParam)
+
+	// Get paginated articles
+	articles, total, err := fc.articleService.GetAllArticlesPaginated(
+		paginationParams.PageSize,
+		paginationParams.CalculateOffset(),
+	)
 	if err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	httpx.WriteJSON(w, http.StatusOK, articles)
+	// Create paginated response
+	pagination := utils.CreatePaginationResult(
+		paginationParams.Page,
+		paginationParams.PageSize,
+		total,
+	)
+
+	response := utils.PaginatedResponse{
+		Data:       articles,
+		Pagination: pagination,
+	}
+
+	httpx.WriteJSON(w, http.StatusOK, response)
 }
 
 func (fc *ArticleController) UpdateArticle(w http.ResponseWriter, r *http.Request) {

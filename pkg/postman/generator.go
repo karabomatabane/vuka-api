@@ -175,6 +175,7 @@ func (g *Generator) createURL(route RouteInfo) URL {
 		Host:     []string{"{{baseUrl}}"},
 		Path:     pathParts,
 		Variable: []Variable{},
+		Query:    []Query{},
 	}
 
 	// Add path variables
@@ -183,6 +184,22 @@ func (g *Generator) createURL(route RouteInfo) URL {
 			Key:         param,
 			Value:       fmt.Sprintf("<%s>", param),
 			Description: fmt.Sprintf("The %s identifier", param),
+		})
+	}
+
+	// Add pagination query parameters for GET /article endpoint
+	if route.Method == "GET" && route.Path == "/article" {
+		url.Query = append(url.Query, Query{
+			Key:         "page",
+			Value:       "1",
+			Description: "Page number (default: 1)",
+			Disabled:    true,
+		})
+		url.Query = append(url.Query, Query{
+			Key:         "pageSize",
+			Value:       "10",
+			Description: "Number of items per page (default: 10, max: 100)",
+			Disabled:    true,
 		})
 	}
 

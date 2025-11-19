@@ -7,84 +7,52 @@
   },
   "item": [
     {
-      "name": "User",
-      "description": "Endpoints for user management",
+      "name": "Auth",
+      "description": "Endpoints for auth management",
       "item": [
         {
-          "name": "GET user",
+          "name": "POST auth register",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "description": "JWT authentication token"
               }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/user",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "user"
-              ]
-            }
-          }
-        },
-        {
-          "name": "GET user :id",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "description": "JWT authentication token"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/:{{id}}",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "user",
-                ":{{id}}"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "\u003cid\u003e",
-                  "description": "The id identifier"
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmPassword\": \"SecurePassword123!\",\n  \"password\": \"SecurePassword123!\",\n  \"roleId\": \"example value\",\n  \"username\": \"Example Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
                 }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
               ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         },
         {
-          "name": "PATCH user :id",
+          "name": "POST auth login",
           "request": {
-            "method": "PATCH",
+            "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "description": "JWT authentication token"
               }
             ],
             "body": {
@@ -97,161 +65,100 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/user/:{{id}}",
+              "raw": "{{baseUrl}}/auth/login",
               "protocol": "http",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "user",
-                ":{{id}}"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "\u003cid\u003e",
-                  "description": "The id identifier"
-                }
+                "auth",
+                "login"
               ]
-            }
-          }
-        },
-        {
-          "name": "DELETE user :id",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "description": "JWT authentication token"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/:{{id}}",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "user",
-                ":{{id}}"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "\u003cid\u003e",
-                  "description": "The id identifier"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "PATCH user :id role",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "description": "JWT authentication token"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"password\": \"SecurePassword123!\",\n  \"username\": \"Example Name\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             },
-            "url": {
-              "raw": "{{baseUrl}}/user/:{{id}}/role",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "user",
-                ":{{id}}",
-                "role"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "\u003cid\u003e",
-                  "description": "The id identifier"
-                }
-              ]
+            "auth": {
+              "type": "noauth"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Save token to environment variable",
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.accessToken) {",
+                  "    pm.environment.set('token', jsonData.accessToken);",
+                  "    console.log('Access token saved to environment');",
+                  "}"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "Role",
-      "description": "Endpoints for role management",
+      "name": "Article",
+      "description": "Endpoints for article management",
       "item": [
         {
-          "name": "GET role",
+          "name": "GET article",
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "description": "JWT authentication token"
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/role",
+              "raw": "{{baseUrl}}/article",
               "protocol": "http",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "role"
+                "article"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)",
+                  "disabled": true
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10",
+                  "description": "Number of items per page (default: 10, max: 100)",
+                  "disabled": true
+                }
               ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         },
         {
-          "name": "GET role :id",
+          "name": "GET article :id",
           "request": {
             "method": "GET",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "description": "JWT authentication token"
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/role/:{{id}}",
+              "raw": "{{baseUrl}}/article/:{{id}}",
               "protocol": "http",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "role",
+                "article",
                 ":{{id}}"
               ],
               "variable": [
@@ -261,63 +168,25 @@
                   "description": "The id identifier"
                 }
               ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         },
         {
-          "name": "GET role :id permissions",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "description": "JWT authentication token"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/role/:{{id}}/permissions",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "role",
-                ":{{id}}",
-                "permissions"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "\u003cid\u003e",
-                  "description": "The id identifier"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "POST role",
+          "name": "POST article rss",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "description": "JWT authentication token"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Example Name\"\n}",
+              "raw": "{\n  \"contentBody\": \"Example content\",\n  \"isFeatured\": false,\n  \"language\": \"en\",\n  \"originalUrl\": \"https://example.com\",\n  \"publishedAt\": \"2025-11-20T00:55:12+02:00\",\n  \"regionID\": \"00000000-0000-0000-0000-000000000000\",\n  \"sourceId\": \"00000000-0000-0000-0000-000000000000\",\n  \"summary\": \"Example description\",\n  \"title\": \"Example Title\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -325,114 +194,34 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/role",
+              "raw": "{{baseUrl}}/article/rss",
               "protocol": "http",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "role"
+                "article",
+                "rss"
               ]
-            }
-          }
-        },
-        {
-          "name": "PATCH role :id",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "description": "JWT authentication token"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Example Name\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             },
-            "url": {
-              "raw": "{{baseUrl}}/role/:{{id}}",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "role",
-                ":{{id}}"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "\u003cid\u003e",
-                  "description": "The id identifier"
-                }
-              ]
+            "auth": {
+              "type": "noauth"
             }
           }
         },
         {
-          "name": "DELETE role :id",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "description": "JWT authentication token"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/role/:{{id}}",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "role",
-                ":{{id}}"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "\u003cid\u003e",
-                  "description": "The id identifier"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "POST role permissions",
+          "name": "POST article",
           "request": {
             "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "description": "JWT authentication token"
               }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Example Name\"\n}",
+              "raw": "{\n  \"contentBody\": \"Example content\",\n  \"isFeatured\": false,\n  \"language\": \"en\",\n  \"originalUrl\": \"https://example.com\",\n  \"publishedAt\": \"2025-11-20T00:55:12+02:00\",\n  \"regionID\": \"00000000-0000-0000-0000-000000000000\",\n  \"sourceId\": \"00000000-0000-0000-0000-000000000000\",\n  \"summary\": \"Example description\",\n  \"title\": \"Example Title\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -440,63 +229,92 @@
               }
             },
             "url": {
-              "raw": "{{baseUrl}}/role/permissions",
+              "raw": "{{baseUrl}}/article",
               "protocol": "http",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "role",
-                "permissions"
+                "article"
               ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         },
         {
-          "name": "DELETE role :roleId permissions :sectionId :permissionId",
+          "name": "PUT article :id",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contentBody\": \"Example content\",\n  \"isFeatured\": false,\n  \"language\": \"en\",\n  \"originalUrl\": \"https://example.com\",\n  \"publishedAt\": \"2025-11-20T00:55:12+02:00\",\n  \"regionID\": \"00000000-0000-0000-0000-000000000000\",\n  \"sourceId\": \"00000000-0000-0000-0000-000000000000\",\n  \"summary\": \"Example description\",\n  \"title\": \"Example Title\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/article/:{{id}}",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "article",
+                ":{{id}}"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "\u003cid\u003e",
+                  "description": "The id identifier"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "DELETE article :id",
           "request": {
             "method": "DELETE",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}",
-                "description": "JWT authentication token"
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/role/:{{roleId}}/permissions/:{{sectionId}}/:{{permissionId}}",
+              "raw": "{{baseUrl}}/article/:{{id}}",
               "protocol": "http",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "role",
-                ":{{roleId}}",
-                "permissions",
-                ":{{sectionId}}",
-                ":{{permissionId}}"
+                "article",
+                ":{{id}}"
               ],
               "variable": [
                 {
-                  "key": "roleId",
-                  "value": "\u003croleId\u003e",
-                  "description": "The roleId identifier"
-                },
-                {
-                  "key": "sectionId",
-                  "value": "\u003csectionId\u003e",
-                  "description": "The sectionId identifier"
-                },
-                {
-                  "key": "permissionId",
-                  "value": "\u003cpermissionId\u003e",
-                  "description": "The permissionId identifier"
+                  "key": "id",
+                  "value": "\u003cid\u003e",
+                  "description": "The id identifier"
                 }
               ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         }
@@ -677,487 +495,6 @@
                 "source",
                 ":{{id}}",
                 "ingest"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "\u003cid\u003e",
-                  "description": "The id identifier"
-                }
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Newsletter",
-      "description": "Endpoints for newsletter management",
-      "item": [
-        {
-          "name": "POST newsletter subscribe",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"user@example.com\",\n  \"phoneNumber\": \"+1234567890\",\n  \"preferredName\": \"Example Name\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/newsletter/subscribe",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "newsletter",
-                "subscribe"
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        },
-        {
-          "name": "GET newsletter subscribers",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/newsletter/subscribers",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "newsletter",
-                "subscribers"
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        },
-        {
-          "name": "GET newsletter subscribers :id",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/newsletter/subscribers/:{{id}}",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "newsletter",
-                "subscribers",
-                ":{{id}}"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "\u003cid\u003e",
-                  "description": "The id identifier"
-                }
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        },
-        {
-          "name": "PATCH newsletter subscribers :id",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"user@example.com\",\n  \"phoneNumber\": \"+1234567890\",\n  \"preferredName\": \"Example Name\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/newsletter/subscribers/:{{id}}",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "newsletter",
-                "subscribers",
-                ":{{id}}"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "\u003cid\u003e",
-                  "description": "The id identifier"
-                }
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        },
-        {
-          "name": "DELETE newsletter subscribers :id",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/newsletter/subscribers/:{{id}}",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "newsletter",
-                "subscribers",
-                ":{{id}}"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "\u003cid\u003e",
-                  "description": "The id identifier"
-                }
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Auth",
-      "description": "Endpoints for auth management",
-      "item": [
-        {
-          "name": "POST auth register",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"confirmPassword\": \"SecurePassword123!\",\n  \"password\": \"SecurePassword123!\",\n  \"roleId\": \"example value\",\n  \"username\": \"Example Name\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/register",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        },
-        {
-          "name": "POST auth login",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"password\": \"SecurePassword123!\",\n  \"username\": \"Example Name\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/login",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "// Save token to environment variable",
-                  "var jsonData = pm.response.json();",
-                  "if (jsonData.token) {",
-                  "    pm.environment.set('token', jsonData.token);",
-                  "    console.log('Token saved to environment');",
-                  "} else if (jsonData.accessToken) {",
-                  "    pm.environment.set('token', jsonData.accessToken);",
-                  "    console.log('Access token saved to environment');",
-                  "}"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Article",
-      "description": "Endpoints for article management",
-      "item": [
-        {
-          "name": "GET article",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/article",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "article"
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        },
-        {
-          "name": "GET article :id",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/article/:{{id}}",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "article",
-                ":{{id}}"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "\u003cid\u003e",
-                  "description": "The id identifier"
-                }
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        },
-        {
-          "name": "POST article rss",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"contentBody\": \"Example content\",\n  \"isFeatured\": false,\n  \"language\": \"en\",\n  \"originalUrl\": \"https://example.com\",\n  \"publishedAt\": \"2025-11-19T20:27:29+02:00\",\n  \"regionID\": \"00000000-0000-0000-0000-000000000000\",\n  \"sourceId\": \"00000000-0000-0000-0000-000000000000\",\n  \"summary\": \"Example description\",\n  \"title\": \"Example Title\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/article/rss",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "article",
-                "rss"
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        },
-        {
-          "name": "POST article",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"contentBody\": \"Example content\",\n  \"isFeatured\": false,\n  \"language\": \"en\",\n  \"originalUrl\": \"https://example.com\",\n  \"publishedAt\": \"2025-11-19T20:27:29+02:00\",\n  \"regionID\": \"00000000-0000-0000-0000-000000000000\",\n  \"sourceId\": \"00000000-0000-0000-0000-000000000000\",\n  \"summary\": \"Example description\",\n  \"title\": \"Example Title\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/article",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "article"
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        },
-        {
-          "name": "PUT article :id",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"contentBody\": \"Example content\",\n  \"isFeatured\": false,\n  \"language\": \"en\",\n  \"originalUrl\": \"https://example.com\",\n  \"publishedAt\": \"2025-11-19T20:27:29+02:00\",\n  \"regionID\": \"00000000-0000-0000-0000-000000000000\",\n  \"sourceId\": \"00000000-0000-0000-0000-000000000000\",\n  \"summary\": \"Example description\",\n  \"title\": \"Example Title\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/article/:{{id}}",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "article",
-                ":{{id}}"
-              ],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "\u003cid\u003e",
-                  "description": "The id identifier"
-                }
-              ]
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          }
-        },
-        {
-          "name": "DELETE article :id",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/article/:{{id}}",
-              "protocol": "http",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "article",
-                ":{{id}}"
               ],
               "variable": [
                 {
@@ -1738,6 +1075,680 @@
               ],
               "path": [
                 "section",
+                ":{{id}}"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "\u003cid\u003e",
+                  "description": "The id identifier"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "description": "Endpoints for user management",
+      "item": [
+        {
+          "name": "GET user",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET user :id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/:{{id}}",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":{{id}}"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "\u003cid\u003e",
+                  "description": "The id identifier"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH user :id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"SecurePassword123!\",\n  \"username\": \"Example Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/:{{id}}",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":{{id}}"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "\u003cid\u003e",
+                  "description": "The id identifier"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE user :id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/:{{id}}",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":{{id}}"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "\u003cid\u003e",
+                  "description": "The id identifier"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH user :id role",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"SecurePassword123!\",\n  \"username\": \"Example Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/:{{id}}/role",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                ":{{id}}",
+                "role"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "\u003cid\u003e",
+                  "description": "The id identifier"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Role",
+      "description": "Endpoints for role management",
+      "item": [
+        {
+          "name": "GET role",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/role",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "role"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET role :id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/role/:{{id}}",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "role",
+                ":{{id}}"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "\u003cid\u003e",
+                  "description": "The id identifier"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET role :id permissions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/role/:{{id}}/permissions",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "role",
+                ":{{id}}",
+                "permissions"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "\u003cid\u003e",
+                  "description": "The id identifier"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST role",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Example Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/role",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "role"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PATCH role :id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Example Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/role/:{{id}}",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "role",
+                ":{{id}}"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "\u003cid\u003e",
+                  "description": "The id identifier"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE role :id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/role/:{{id}}",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "role",
+                ":{{id}}"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "\u003cid\u003e",
+                  "description": "The id identifier"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST role permissions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Example Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/role/permissions",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "role",
+                "permissions"
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE role :roleId permissions :sectionId :permissionId",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/role/:{{roleId}}/permissions/:{{sectionId}}/:{{permissionId}}",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "role",
+                ":{{roleId}}",
+                "permissions",
+                ":{{sectionId}}",
+                ":{{permissionId}}"
+              ],
+              "variable": [
+                {
+                  "key": "roleId",
+                  "value": "\u003croleId\u003e",
+                  "description": "The roleId identifier"
+                },
+                {
+                  "key": "sectionId",
+                  "value": "\u003csectionId\u003e",
+                  "description": "The sectionId identifier"
+                },
+                {
+                  "key": "permissionId",
+                  "value": "\u003cpermissionId\u003e",
+                  "description": "The permissionId identifier"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Newsletter",
+      "description": "Endpoints for newsletter management",
+      "item": [
+        {
+          "name": "POST newsletter subscribe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"phoneNumber\": \"+1234567890\",\n  \"preferredName\": \"Example Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/newsletter/subscribe",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "newsletter",
+                "subscribe"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "GET newsletter subscribers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/newsletter/subscribers",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "newsletter",
+                "subscribers"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "GET newsletter subscribers :id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/newsletter/subscribers/:{{id}}",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "newsletter",
+                "subscribers",
+                ":{{id}}"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "\u003cid\u003e",
+                  "description": "The id identifier"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "PATCH newsletter subscribers :id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"phoneNumber\": \"+1234567890\",\n  \"preferredName\": \"Example Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/newsletter/subscribers/:{{id}}",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "newsletter",
+                "subscribers",
+                ":{{id}}"
+              ],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "\u003cid\u003e",
+                  "description": "The id identifier"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "DELETE newsletter subscribers :id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/newsletter/subscribers/:{{id}}",
+              "protocol": "http",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "newsletter",
+                "subscribers",
                 ":{{id}}"
               ],
               "variable": [

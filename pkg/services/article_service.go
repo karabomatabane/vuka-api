@@ -57,6 +57,11 @@ func (s *ArticleService) GetAllArticles() ([]db.Article, error) {
 	return s.repos.Article.GetAllWithRelations()
 }
 
+// GetAllArticlesPaginated returns paginated articles with relations
+func (s *ArticleService) GetAllArticlesPaginated(limit, offset int) ([]db.Article, int64, error) {
+	return s.repos.Article.GetAllWithRelationsPaginated(limit, offset)
+}
+
 // UpdateArticle ...
 func (s *ArticleService) UpdateArticle(id string, updates map[string]any) (*db.Article, error) {
 	articleId, err := uuid.Parse(id)

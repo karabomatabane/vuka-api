@@ -56,6 +56,28 @@ func (r *articleRepository) GetAllWithRelations() ([]db.Article, error) {
 	return articles, err
 }
 
+func (r *articleRepository) GetAllWithRelationsPaginated(limit, offset int) ([]db.Article, int64, error) {
+	var articles []db.Article
+	var total int64
+
+	// Count total articles
+	if err := r.db.Model(&db.Article{}).Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// Get paginated articles with relations
+	err := r.db.Preload("Source").
+		Preload("Region").
+		Preload("Images").
+		Preload("Categories").
+		Order("created_at DESC").
+		Limit(limit).
+		Offset(offset).
+		Find(&articles).Error
+
+	return articles, total, err
+}
+
 func (r *articleRepository) Update(id uuid.UUID, updates map[string]any) error {
 	return r.db.Model(&db.Article{}).Where("id = ?", id).Updates(updates).Error
 }
