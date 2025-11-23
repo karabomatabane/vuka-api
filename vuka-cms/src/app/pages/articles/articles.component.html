@@ -5,7 +5,8 @@
     <mat-label>Filter Articles</mat-label>
     <input
       matInput
-      (keyup)="applyFilter($event)"
+      (input)="applyFilter($event)"
+      (keydown.enter)="triggerSearch()"
       placeholder="Search by title, source, etc."
       #input
     />

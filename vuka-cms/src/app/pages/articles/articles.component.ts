@@ -5,9 +5,11 @@ import {
   ChangeDetectionStrategy,
   OnInit,
   inject,
+  DestroyRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { finalize, Subject, debounceTime } from 'rxjs';
+import { finalize, Subject, debounceTime, merge, startWith } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 // Import Angular Material modules
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -44,6 +46,7 @@ export class ArticlesComponent implements OnInit, AfterViewInit {
   private articleService = inject(ArticleService);
   private router = inject(Router);
   private searchSubject = new Subject<string>();
+  private destroyRef = inject(DestroyRef);
 
   displayedColumns: string[] = [
     'isFeatured',
@@ -61,7 +64,8 @@ export class ArticlesComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.searchSubject.pipe(
-      debounceTime(300)
+      debounceTime(800),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe(searchValue => {
       this.search = searchValue;
       this.paginator.pageIndex = 0;
@@ -70,9 +74,13 @@ export class ArticlesComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.sort.sortChange.subscribe(() => this.loadArticles());
-    this.paginator.page.subscribe(() => this.loadArticles());
-    this.loadArticles();
+    // Reset paginator on sort change
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+
+    // Merge sort and paginator events
+    merge(this.sort.sortChange, this.paginator.page)
+      .pipe(startWith({}), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadArticles());
   }
 
   loadArticles() {
@@ -100,6 +108,10 @@ export class ArticlesComponent implements OnInit, AfterViewInit {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.searchSubject.next(filterValue.trim().toLowerCase());
+  }
+
+  triggerSearch() {
+    this.loadArticles();
   }
 
   openArticleDetails(article: Article) {
