@@ -28,6 +28,7 @@ func NewServices(db *gorm.DB) *Services {
 	categoryService := NewCategoryService(repos.Category)
 	rssService := NewRssService(articleService, categoryService)
 	directoryService := NewDirectoryService(repos.Directory)
+	newsletterService := NewNewsletterService(repos)
 
 	return &Services{
 		Article:    articleService,
@@ -36,10 +37,10 @@ func NewServices(db *gorm.DB) *Services {
 		Role:       NewRoleService(repos),
 		Rss:        rssService,
 		Source:     sourceService,
-		Cron:       NewCronService(rssService, sourceService),
+		Cron:       NewCronService(rssService, sourceService, newsletterService),
 		Category:   categoryService,
 		Directory:  directoryService,
 		Permission: NewPermissionService(repos),
-		Newsletter: NewNewsletterService(repos),
+		Newsletter: newsletterService,
 	}
 }

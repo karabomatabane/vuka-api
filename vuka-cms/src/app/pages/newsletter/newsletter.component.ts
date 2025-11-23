@@ -19,7 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { NewsletterSubscriber } from 'src/app/_models/newsletter-subscriber.model';
@@ -40,6 +40,7 @@ import { NewsletterService } from 'src/app/_services/newsletter.service';
     MatTooltipModule,
     MatButtonModule,
     MatSnackBarModule,
+    RouterLink,
   ],
   templateUrl: './newsletter.component.html',
   styleUrls: ['./newsletter.component.scss'],

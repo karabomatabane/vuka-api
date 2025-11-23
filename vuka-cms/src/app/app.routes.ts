@@ -10,6 +10,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { authGuard } from './_helpers/auth.guard';
 import { DirectoryCategoryComponent } from './pages/directories/directory-category/directory-category.component';
 import { NewsletterComponent } from './pages/newsletter/newsletter.component';
+import { NewsletterEditorComponent } from './pages/newsletter-editor/newsletter-editor.component';
 
 export const routes: Routes = [
   {
@@ -69,6 +70,11 @@ export const routes: Routes = [
   {
     path: 'newsletter',
     component: NewsletterComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'newsletter/editor',
+    component: NewsletterEditorComponent,
     canActivate: [authGuard],
   }
 ];
