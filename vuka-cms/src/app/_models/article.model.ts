@@ -24,6 +24,6 @@ export interface PaginatedArticles {
   pagination: {
     page: number;
     pageSize: number;
-    total: number;
+    totalItems: number;
   };
 }

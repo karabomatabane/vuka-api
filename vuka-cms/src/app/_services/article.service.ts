@@ -11,8 +11,12 @@ export class ArticleService {
   private readonly baseUrl = `${environment.apiUrl}/article`;
   constructor(private http: HttpClient) { }
 
-  getArticles(page: number, pageSize: number): Observable<PaginatedArticles> {
-    return this.http.get<PaginatedArticles>(`${this.baseUrl}?page=${page}&pageSize=${pageSize}`);
+  getArticles(page: number, pageSize: number, search?: string): Observable<PaginatedArticles> {
+    let url = `${this.baseUrl}?page=${page}&pageSize=${pageSize}`;
+    if (search) {
+      url += `&search=${search}`;
+    }
+    return this.http.get<PaginatedArticles>(url);
   }
 
   getArticleById(id: string) {

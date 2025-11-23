@@ -7,7 +7,7 @@ import {
   inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { finalize } from 'rxjs/operators';
+import { finalize, Subject, debounceTime } from 'rxjs';
 
 // Import Angular Material modules
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -43,6 +43,7 @@ import { Router } from '@angular/router';
 export class ArticlesComponent implements OnInit, AfterViewInit {
   private articleService = inject(ArticleService);
   private router = inject(Router);
+  private searchSubject = new Subject<string>();
 
   displayedColumns: string[] = [
     'isFeatured',
@@ -53,45 +54,52 @@ export class ArticlesComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<Article>([]);
   isLoading = true; // Start in a loading state
   totalArticles = 0;
+  search: string = '';
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   ngOnInit() {
-    this.loadArticles();
+    this.searchSubject.pipe(
+      debounceTime(300)
+    ).subscribe(searchValue => {
+      this.search = searchValue;
+      this.paginator.pageIndex = 0;
+      this.loadArticles();
+    });
   }
 
   ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
+    this.sort.sortChange.subscribe(() => this.loadArticles());
     this.paginator.page.subscribe(() => this.loadArticles());
+    this.loadArticles();
   }
 
   loadArticles() {
     this.isLoading = true;
     this.articleService
-      .getArticles(this.paginator?.pageIndex ?? 1, this.paginator?.pageSize ?? 10)
+      .getArticles(
+        this.paginator?.pageIndex + 1,
+        this.paginator?.pageSize,
+        this.search
+      )
       .pipe(
-        finalize(() => (this.isLoading = false)) // Ensure loading is turned off on complete or error
+        finalize(() => (this.isLoading = false))
       )
       .subscribe({
         next: (data: PaginatedArticles) => {
           this.dataSource.data = data.data;
-          this.totalArticles = data.pagination.total;
+          this.totalArticles = data.pagination.totalItems;
         },
         error: (err) => {
           console.error('Error fetching articles:', err);
-          // Optionally, display an error message to the user
         },
       });
   }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage(); // Go back to the first page on filter
-    }
+    this.searchSubject.next(filterValue.trim().toLowerCase());
   }
 
   openArticleDetails(article: Article) {
