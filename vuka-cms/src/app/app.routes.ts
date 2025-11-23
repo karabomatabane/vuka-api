@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { ArticlesComponent } from './pages/articles/articles.component';
 import { SourcesComponent } from './pages/sources/sources.component';
 import { DirectoriesComponent } from './pages/directories/directories.component';
@@ -10,21 +9,17 @@ import { SourceEditComponent } from './pages/source-edit/source-edit.component';
 import { LoginComponent } from './pages/login/login.component';
 import { authGuard } from './_helpers/auth.guard';
 import { DirectoryCategoryComponent } from './pages/directories/directory-category/directory-category.component';
+import { NewsletterComponent } from './pages/newsletter/newsletter.component';
 
 export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'dashboard',
+    redirectTo: 'articles',
   },
   {
     path: 'login',
     component: LoginComponent,
-  },
-  {
-    path: 'dashboard',
-    component: DashboardComponent,
-    canActivate: [authGuard],
   },
   {
     path: 'articles',
@@ -71,4 +66,9 @@ export const routes: Routes = [
     component: RolesAndPermissionsComponent,
     canActivate: [authGuard],
   },
+  {
+    path: 'newsletter',
+    component: NewsletterComponent,
+    canActivate: [authGuard],
+  }
 ];

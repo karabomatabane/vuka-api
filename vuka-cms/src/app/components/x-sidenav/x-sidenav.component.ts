@@ -53,7 +53,6 @@ export class XSidenavComponent {
   menuItems = computed(() => {
     if (this.currentUser()) {
       return [
-        { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
         { icon: 'newsstand', label: 'Articles', route: '/articles' },
         { icon: 'home_storage', label: 'Sources', route: '/sources' },
         {
@@ -68,6 +67,7 @@ export class XSidenavComponent {
             })),
           ],
         },
+        { icon: 'mail', label: 'Newsletter', route: '/newsletter' },
         {
           icon: 'security',
           label: 'Roles & Permissions',

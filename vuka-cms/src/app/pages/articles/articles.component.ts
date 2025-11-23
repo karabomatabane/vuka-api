@@ -6,8 +6,7 @@ import {
   OnInit,
   inject,
 } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http'; // <-- Import HttpClientModule
+import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 
 // Import Angular Material modules
@@ -19,7 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; // <-- For loading indicator
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ArticleService } from 'src/app/_services/article.service';
-import { Article } from 'src/app/_models/article.model';
+import { Article, PaginatedArticles } from 'src/app/_models/article.model';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 
@@ -36,9 +35,7 @@ import { Router } from '@angular/router';
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    DatePipe,
   ],
-  providers: [ArticleService], // <-- Provide the service to the component
   templateUrl: './articles.component.html',
   styleUrl: './articles.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,6 +52,7 @@ export class ArticlesComponent implements OnInit, AfterViewInit {
   ];
   dataSource = new MatTableDataSource<Article>([]);
   isLoading = true; // Start in a loading state
+  totalArticles = 0;
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -65,28 +63,20 @@ export class ArticlesComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
-    
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      switch (property) {
-        case 'sourceName':
-          return item.source?.name || '';
-        default:
-          return (item as any)[property];
-      }
-    };
+    this.paginator.page.subscribe(() => this.loadArticles());
   }
 
   loadArticles() {
     this.isLoading = true;
     this.articleService
-      .getArticles()
+      .getArticles(this.paginator?.pageIndex ?? 1, this.paginator?.pageSize ?? 10)
       .pipe(
         finalize(() => (this.isLoading = false)) // Ensure loading is turned off on complete or error
       )
       .subscribe({
-        next: (data) => {
-          this.dataSource.data = data as Article[];
+        next: (data: PaginatedArticles) => {
+          this.dataSource.data = data.data;
+          this.totalArticles = data.pagination.total;
         },
         error: (err) => {
           console.error('Error fetching articles:', err);
