@@ -4,8 +4,8 @@ import "strings"
 
 // CategoryGroup represents a group of related category keywords
 type CategoryGroup struct {
-	Name       string   // The name of the category group (e.g., "Sports", "Politics")
-	Keywords   []string // Keywords that map to this category (case-insensitive)
+	Name     string   // The name of the category group (e.g., "Sports", "Politics")
+	Keywords []string // Keywords that map to this category (case-insensitive)
 }
 
 // CategoryMapper handles mapping article categories to grouped categories
@@ -93,7 +93,7 @@ func (cm *CategoryMapper) MapCategories(categories []string) []string {
 
 	for _, category := range categories {
 		categoryLower := strings.ToLower(strings.TrimSpace(category))
-		
+
 		// Check each group for a match
 		for _, group := range cm.groups {
 			for _, keyword := range group.Keywords {

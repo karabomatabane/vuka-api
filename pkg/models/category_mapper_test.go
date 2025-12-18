@@ -152,12 +152,12 @@ func TestCategoryMapper_CustomGroups(t *testing.T) {
 
 func TestCategoryMapper_AddGroup(t *testing.T) {
 	mapper := NewCategoryMapper()
-	
+
 	newGroup := CategoryGroup{
 		Name:     "Science",
 		Keywords: []string{"science", "research", "study", "discovery"},
 	}
-	
+
 	mapper.AddGroup(newGroup)
 
 	categories := []string{"Science News", "Research"}
