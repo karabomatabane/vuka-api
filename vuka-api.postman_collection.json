@@ -13,13 +13,22 @@
         {
           "name": "GET section",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmPassword\": \"SecurePassword123!\",\n  \"password\": \"SecurePassword123!\",\n  \"roleId\": \"example value\",\n  \"username\": \"Example Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/section",
               "protocol": "http",
@@ -38,13 +47,22 @@
         {
           "name": "GET section :id",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"SecurePassword123!\",\n  \"username\": \"Example Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/section/:{{id}}",
               "protocol": "http",
@@ -71,7 +89,7 @@
         {
           "name": "POST section",
           "request": {
-            "method": "POST",
+            "method": "GET",
             "header": [
               {
                 "key": "Content-Type",
@@ -96,9 +114,6 @@
               "path": [
                 "section"
               ]
-            },
-            "auth": {
-              "type": "noauth"
             }
           }
         },
@@ -152,6 +167,11 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
               }
             ],
             "url": {
@@ -383,6 +403,11 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
               }
             ],
             "url": {
@@ -408,9 +433,6 @@
                   "disabled": true
                 }
               ]
-            },
-            "auth": {
-              "type": "noauth"
             }
           }
         },
@@ -422,6 +444,11 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
               }
             ],
             "url": {
@@ -441,9 +468,6 @@
                   "description": "The id identifier"
                 }
               ]
-            },
-            "auth": {
-              "type": "noauth"
             }
           }
         },
@@ -455,6 +479,11 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
               }
             ],
             "body": {
@@ -485,7 +514,7 @@
         {
           "name": "POST article",
           "request": {
-            "method": "POST",
+            "method": "DELETE",
             "header": [
               {
                 "key": "Content-Type",
@@ -524,6 +553,11 @@
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
               }
             ],
             "body": {
@@ -631,13 +665,22 @@
         {
           "name": "GET directory",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contentBody\": \"Example content\",\n  \"isFeatured\": false,\n  \"language\": \"en\",\n  \"originalUrl\": \"https://example.com\",\n  \"publishedAt\": \"2025-11-23T10:11:27Z\",\n  \"regionID\": \"00000000-0000-0000-0000-000000000000\",\n  \"sourceId\": \"00000000-0000-0000-0000-000000000000\",\n  \"summary\": \"Example description\",\n  \"title\": \"Example Title\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/directory",
               "protocol": "http",
@@ -725,7 +768,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Example Name\"\n}",
+              "raw": "{\n  \"contentBody\": \"Example content\",\n  \"isFeatured\": false,\n  \"language\": \"en\",\n  \"originalUrl\": \"https://example.com\",\n  \"publishedAt\": \"2025-11-23T10:11:27Z\",\n  \"regionID\": \"00000000-0000-0000-0000-000000000000\",\n  \"sourceId\": \"00000000-0000-0000-0000-000000000000\",\n  \"summary\": \"Example description\",\n  \"title\": \"Example Title\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -860,13 +903,27 @@
         {
           "name": "GET newsletter subscribers",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
               {
                 "key": "Content-Type",
                 "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "description": "JWT authentication token"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Example description\",\n  \"entryType\": \"default\",\n  \"name\": \"Example Name\",\n  \"websiteUrl\": \"https://example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{baseUrl}}/newsletter/subscribers",
               "protocol": "http",
@@ -961,9 +1018,9 @@
           }
         },
         {
-          "name": "DELETE newsletter subscribers :id",
+          "name": "GET article :id",
           "request": {
-            "method": "DELETE",
+            "method": "GET",
             "header": [
               {
                 "key": "Content-Type",
@@ -971,14 +1028,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/newsletter/subscribers/:{{id}}",
+              "raw": "{{baseUrl}}/article/:{{id}}",
               "protocol": "http",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "newsletter",
-                "subscribers",
+                "article",
                 ":{{id}}"
               ],
               "variable": [
@@ -1103,7 +1159,7 @@
         {
           "name": "GET newsletter test-smtp",
           "request": {
-            "method": "GET",
+            "method": "PUT",
             "header": [
               {
                 "key": "Content-Type",
@@ -1830,22 +1886,34 @@
                 "description": "JWT authentication token"
               }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Example Name\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
-              "raw": "{{baseUrl}}/permission",
+              "raw": "{{baseUrl}}/section",
               "protocol": "http",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "permission"
+                "section"
               ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         },
         {
           "name": "GET permission :id",
           "request": {
-            "method": "GET",
+            "method": "PATCH",
             "header": [
               {
                 "key": "Content-Type",
@@ -1858,13 +1926,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/permission/:{{id}}",
+              "raw": "{{baseUrl}}/section/:{{id}}",
               "protocol": "http",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "permission",
+                "section",
                 ":{{id}}"
               ],
               "variable": [
@@ -1874,9 +1942,18 @@
                   "description": "The id identifier"
                 }
               ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
-        },
+        }
+      ]
+    },
+    {
+      "name": "Newsletter",
+      "description": "Endpoints for newsletter management",
+      "item": [
         {
           "name": "POST permission",
           "request": {
@@ -1894,7 +1971,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Example Name\"\n}",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"phoneNumber\": \"+1234567890\",\n  \"preferredName\": \"Example Name\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1930,7 +2007,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Example Name\"\n}",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"phoneNumber\": \"+1234567890\",\n  \"preferredName\": \"Example Name\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1954,6 +2031,9 @@
                   "description": "The id identifier"
                 }
               ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         },
@@ -1973,13 +2053,14 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/permission/:{{id}}",
+              "raw": "{{baseUrl}}/newsletter/subscribers/:{{id}}",
               "protocol": "http",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "permission",
+                "newsletter",
+                "subscribers",
                 ":{{id}}"
               ],
               "variable": [
@@ -1989,6 +2070,9 @@
                   "description": "The id identifier"
                 }
               ]
+            },
+            "auth": {
+              "type": "noauth"
             }
           }
         }
