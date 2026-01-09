@@ -35,4 +35,34 @@ var RegisterNewsletterRoutes = func(router *mux.Router) {
 	protectedRouter.HandleFunc("/subscribers/{id}",
 		newsletterController.DeleteSubscriber).
 		Methods(http.MethodDelete)
+
+	// Email sending routes
+	protectedRouter.HandleFunc("/send",
+		newsletterController.SendNewsletter).
+		Methods(http.MethodPost)
+
+	protectedRouter.HandleFunc("/send/articles",
+		newsletterController.SendNewsletterWithArticles).
+		Methods(http.MethodPost)
+
+	protectedRouter.HandleFunc("/test-email",
+		newsletterController.SendTestEmail).
+		Methods(http.MethodPost)
+
+	protectedRouter.HandleFunc("/test-smtp",
+		newsletterController.TestSMTPConnection).
+		Methods(http.MethodGet)
+
+	// Template management routes
+	protectedRouter.HandleFunc("/template",
+		newsletterController.GetTemplate).
+		Methods(http.MethodGet)
+
+	protectedRouter.HandleFunc("/template",
+		newsletterController.UpdateTemplate).
+		Methods(http.MethodPut)
+
+	protectedRouter.HandleFunc("/preview",
+		newsletterController.PreviewNewsletter).
+		Methods(http.MethodPost)
 }

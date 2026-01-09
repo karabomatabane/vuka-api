@@ -75,9 +75,13 @@ func (s *RssService) IngestRSSFeedWithSource(url string, sourceID *uuid.UUID) er
 			fmt.Printf("Successfully saved article: %s\n", article.Title)
 			savedCount++
 
+			// Use category mapper to group categories
+			mapper := models.NewCategoryMapper()
+			groupedCategoryNames := mapper.MapCategories(item.Categories)
+
 			// Find or create categories and associate them with the article
 			var categories []db.Category
-			for _, categoryName := range item.Categories {
+			for _, categoryName := range groupedCategoryNames {
 				category, err := s.categoryService.FindOrCreate(categoryName)
 				if err != nil {
 					log.Printf("Failed to find or create category '%s': %v", categoryName, err)

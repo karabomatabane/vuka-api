@@ -2,11 +2,12 @@ package models
 
 import (
 	"encoding/xml"
-	"golang.org/x/net/html"
 	"regexp"
 	"strings"
 	"time"
 	"vuka-api/pkg/models/db"
+
+	"golang.org/x/net/html"
 )
 
 // The root of the RSS feed
@@ -45,6 +46,16 @@ func (feed *Item) ToArticle(language string) (*db.Article, error) {
 	}
 
 	images, _ := extractImagesFromHTML(feed.Description)
+
+	// If no images found in description, extract from content body (take first 3)
+	if len(images) == 0 && feed.ContentEncoded != "" {
+		contentImages, _ := extractImagesFromHTML(feed.ContentEncoded)
+		if len(contentImages) > 3 {
+			images = contentImages[:3]
+		} else {
+			images = contentImages
+		}
+	}
 
 	// Remove img tags from description
 	re := regexp.MustCompile(`<img[^>]*>`)

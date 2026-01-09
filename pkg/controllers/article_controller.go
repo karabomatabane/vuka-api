@@ -43,14 +43,16 @@ func (fc *ArticleController) GetAllArticles(w http.ResponseWriter, r *http.Reque
 	// Get pagination parameters from query string
 	pageParam := r.URL.Query().Get("page")
 	pageSizeParam := r.URL.Query().Get("pageSize")
+	searchParam := r.URL.Query().Get("search")
 
 	// Parse pagination parameters
 	paginationParams := utils.GetPaginationParams(pageParam, pageSizeParam)
 
-	// Get paginated articles
-	articles, total, err := fc.articleService.GetAllArticlesPaginated(
+	// Get paginated articles with search
+	articles, total, err := fc.articleService.GetAllArticlesPaginatedAndSearch(
 		paginationParams.PageSize,
 		paginationParams.CalculateOffset(),
+		searchParam,
 	)
 	if err != nil {
 		httpx.WriteErrorJSON(w, err.Error(), http.StatusInternalServerError)

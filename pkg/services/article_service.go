@@ -62,6 +62,11 @@ func (s *ArticleService) GetAllArticlesPaginated(limit, offset int) ([]db.Articl
 	return s.repos.Article.GetAllWithRelationsPaginated(limit, offset)
 }
 
+// GetAllArticlesPaginatedAndSearch returns paginated articles with relations and search
+func (s *ArticleService) GetAllArticlesPaginatedAndSearch(limit, offset int, search string) ([]db.Article, int64, error) {
+	return s.repos.Article.GetAllWithRelationsPaginatedAndSearch(limit, offset, search)
+}
+
 // UpdateArticle ...
 func (s *ArticleService) UpdateArticle(id string, updates map[string]any) (*db.Article, error) {
 	articleId, err := uuid.Parse(id)
@@ -87,7 +92,35 @@ func (s *ArticleService) UpdateArticle(id string, updates map[string]any) (*db.A
 		delete(updates, "categoryIds")
 	}
 
+	// Remove fields that shouldn't be updated directly
 	delete(updates, "id")
+	delete(updates, "categories")
+	delete(updates, "source")
+	delete(updates, "region")
+	delete(updates, "images")
+
+	// Convert camelCase JSON field names to snake_case database column names
+	if val, ok := updates["isFeatured"]; ok {
+		updates["is_featured"] = val
+		delete(updates, "isFeatured")
+	}
+	if val, ok := updates["contentBody"]; ok {
+		updates["content_body"] = val
+		delete(updates, "contentBody")
+	}
+	if val, ok := updates["originalUrl"]; ok {
+		updates["original_url"] = val
+		delete(updates, "originalUrl")
+	}
+	if val, ok := updates["publishedAt"]; ok {
+		updates["published_at"] = val
+		delete(updates, "publishedAt")
+	}
+	if val, ok := updates["sourceId"]; ok {
+		updates["source_id"] = val
+		delete(updates, "sourceId")
+	}
+
 	err = s.repos.Article.Update(articleId, updates)
 	if err != nil {
 		return nil, err

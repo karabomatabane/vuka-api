@@ -18,3 +18,12 @@ export interface Article extends BaseModel {
   categories: Category[] | null;
   images: ArticleImage[] | null;
 }
+
+export interface PaginatedArticles {
+  data: Article[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    totalItems: number;
+  };
+}

@@ -2,7 +2,6 @@ package httpx
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"net/http"
@@ -42,17 +41,4 @@ func GenerateTokenString(userId uuid.UUID, userRole user.Role, expDate time.Time
 
 	// Sign the token and get the complete encoded token as a string
 	return token.SignedString([]byte(os.Getenv("ACCESS_TOKEN_SECRET")))
-}
-
-func GetFromTmdb(url string) (*http.Response, error) {
-	token := os.Getenv("TMDB_ACCESS_TOKEN")
-	if token == "" {
-		return nil, fmt.Errorf("TMDB_ACCESS_TOKEN not set")
-	}
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Authorization", "Bearer "+token)
-	return http.DefaultClient.Do(req)
 }

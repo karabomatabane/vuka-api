@@ -78,6 +78,22 @@ func main() {
 			log.Printf("Failed to schedule RSS ingestion: %v", err)
 		}
 
+		// Schedule newsletter sending (uncomment to enable)
+		// Weekly newsletter every Monday at 9:00 AM
+		// if err := cronService.ScheduleNewsletterWeekly(time.Monday, 9, 0); err != nil {
+		// 	log.Printf("Failed to schedule weekly newsletter: %v", err)
+		// }
+
+		// Daily newsletter at 8:00 AM
+		// if err := cronService.ScheduleNewsletterDaily(8, 0); err != nil {
+		// 	log.Printf("Failed to schedule daily newsletter: %v", err)
+		// }
+
+		// Monthly newsletter on the 15th at 10:00 AM
+		// if err := cronService.ScheduleNewsletterMonthly(15, 10, 0); err != nil {
+		// 	log.Printf("Failed to schedule monthly newsletter: %v", err)
+		// }
+
 		// Start the cron service
 		cronService.Start()
 		log.Println("Cron service started - RSS feeds will be ingested hourly")

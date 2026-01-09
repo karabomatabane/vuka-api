@@ -1,0 +1,165 @@
+<div class="newsletter-editor-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>mail</mat-icon>
+        Newsletter Email Editor
+      </mat-card-title>
+      <mat-card-subtitle>
+        Design and preview your newsletter emails
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (isLoading()) {
+        <div class="loading-container">
+          <mat-spinner></mat-spinner>
+          <p>Loading template...</p>
+        </div>
+      } @else {
+        <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="300ms" (selectedTabChange)="onTabChange($event)">
+          <!-- Editor Tab -->
+          <mat-tab label="Editor">
+            <div class="tab-content">
+              <div class="editor-actions">
+                <button mat-raised-button color="primary" (click)="saveTemplate()" [disabled]="isSaving()">
+                  <mat-icon>save</mat-icon>
+                  {{ isSaving() ? 'Saving...' : 'Save Template' }}
+                </button>
+                <button mat-raised-button (click)="generatePreview()" [disabled]="isPreviewing()">
+                  <mat-icon>visibility</mat-icon>
+                  {{ isPreviewing() ? 'Generating...' : 'Update Preview' }}
+                </button>
+                <button mat-stroked-button (click)="resetTemplate()">
+                  <mat-icon>refresh</mat-icon>
+                  Reset
+                </button>
+              </div>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>HTML Template</mat-label>
+                <textarea
+                  matInput
+                  [(ngModel)]="templateContent"
+                  rows="20"
+                  placeholder="Enter HTML template here..."
+                  class="template-editor"
+                ></textarea>
+                <mat-hint>Edit the HTML template for your newsletter emails</mat-hint>
+              </mat-form-field>
+
+              <div class="template-info">
+                <h3>Available Template Variables:</h3>
+                <ul>
+                  <li><code>{{"{{.SubscriberName}}"}}</code> - Subscriber's name</li>
+                  <li><code>{{"{{.Date}}"}}</code> - Current date</li>
+                  <li><code>{{"{{.Year}}"}}</code> - Current year</li>
+                  <li><code>{{"{{range .Articles}}...{{end}}"}}</code> - Loop through articles</li>
+                  <li><code>{{"{{.Title}}"}}</code> - Article title (inside loop)</li>
+                  <li><code>{{"{{.Source.Name}}"}}</code> - Source name (inside loop)</li>
+                  <li><code>{{"{{.Summary}}"}}</code> - Article summary (inside loop)</li>
+                  <li><code>{{"{{.OriginalUrl}}"}}</code> - Article URL (inside loop)</li>
+                </ul>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Preview Tab -->
+          <mat-tab label="Preview">
+            <div class="tab-content">
+              <div class="preview-controls">
+                <mat-form-field appearance="outline">
+                  <mat-label>Number of Articles</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    [value]="articleLimit()"
+                    (change)="onArticleLimitChange($event)"
+                    min="1"
+                    max="20"
+                  />
+                  <mat-hint>Preview with this many featured articles</mat-hint>
+                </mat-form-field>
+
+                <button mat-raised-button color="accent" (click)="generatePreview()" [disabled]="isPreviewing()">
+                  <mat-icon>refresh</mat-icon>
+                  Refresh Preview
+                </button>
+              </div>
+
+              @if (isPreviewing()) {
+                <div class="loading-container">
+                  <mat-spinner></mat-spinner>
+                  <p>Generating preview...</p>
+                </div>
+              } @else {
+                <div class="preview-wrapper">
+                  <iframe #previewFrame class="preview-iframe"></iframe>
+                </div>
+              }
+            </div>
+          </mat-tab>
+
+          <!-- Send Tab -->
+          <mat-tab label="Send Newsletter">
+            <div class="tab-content">
+              <div class="send-section">
+                <div class="schedule-info">
+                  <mat-icon>schedule</mat-icon>
+                  <div>
+                    <h4>Automated Schedule</h4>
+                    <p>Newsletters are automatically sent <strong>monthly on the 1st at 9:00 AM</strong>. To change the schedule, contact Karabo.</p>
+                  </div>
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <h3>Send Newsletter to All Subscribers</h3>
+                
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Email Subject</mat-label>
+                  <input matInput [(ngModel)]="sendSubject" placeholder="Vuka Weekly Newsletter - Latest Stories" />
+                  <mat-hint>Subject line for the newsletter email</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Number of Articles to Include</mat-label>
+                  <input matInput type="number" [value]="articleLimit()" (change)="onArticleLimitChange($event)" min="1" max="20" />
+                  <mat-hint>Number of featured articles to include</mat-hint>
+                </mat-form-field>
+
+                <div class="send-actions">
+                  <button 
+                    mat-raised-button 
+                    color="primary" 
+                    (click)="sendNewsletter()" 
+                    [disabled]="isSending || !sendSubject.trim()"
+                    class="send-button"
+                  >
+                    <mat-icon>send</mat-icon>
+                    {{ isSending ? 'Sending...' : 'Send Newsletter' }}
+                  </button>
+
+                  <button mat-stroked-button (click)="sendTestEmail()">
+                    <mat-icon>email</mat-icon>
+                    Send Test Email
+                  </button>
+                </div>
+
+                <mat-divider></mat-divider>
+
+                <div class="warning-message">
+                  <mat-icon color="warn">warning</mat-icon>
+                  <p>
+                    This will send the newsletter to all subscribers in your database.
+                    Make sure to preview the email before sending!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

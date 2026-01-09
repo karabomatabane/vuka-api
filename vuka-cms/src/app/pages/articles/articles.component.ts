@@ -5,10 +5,11 @@ import {
   ChangeDetectionStrategy,
   OnInit,
   inject,
+  DestroyRef,
 } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http'; // <-- Import HttpClientModule
-import { finalize } from 'rxjs/operators';
+import { CommonModule } from '@angular/common';
+import { finalize, Subject, debounceTime, merge, startWith } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 // Import Angular Material modules
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -19,7 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; // <-- For loading indicator
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ArticleService } from 'src/app/_services/article.service';
-import { Article } from 'src/app/_models/article.model';
+import { Article, PaginatedArticles } from 'src/app/_models/article.model';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 
@@ -36,9 +37,7 @@ import { Router } from '@angular/router';
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    DatePipe,
   ],
-  providers: [ArticleService], // <-- Provide the service to the component
   templateUrl: './articles.component.html',
   styleUrl: './articles.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,6 +45,8 @@ import { Router } from '@angular/router';
 export class ArticlesComponent implements OnInit, AfterViewInit {
   private articleService = inject(ArticleService);
   private router = inject(Router);
+  private searchSubject = new Subject<string>();
+  private destroyRef = inject(DestroyRef);
 
   displayedColumns: string[] = [
     'isFeatured',
@@ -55,53 +56,62 @@ export class ArticlesComponent implements OnInit, AfterViewInit {
   ];
   dataSource = new MatTableDataSource<Article>([]);
   isLoading = true; // Start in a loading state
+  totalArticles = 0;
+  search: string = '';
 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   ngOnInit() {
-    this.loadArticles();
+    this.searchSubject.pipe(
+      debounceTime(800),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(searchValue => {
+      this.search = searchValue;
+      this.paginator.pageIndex = 0;
+      this.loadArticles();
+    });
   }
 
   ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
-    
-    this.dataSource.sortingDataAccessor = (item, property) => {
-      switch (property) {
-        case 'sourceName':
-          return item.source?.name || '';
-        default:
-          return (item as any)[property];
-      }
-    };
+    // Reset paginator on sort change
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+
+    // Merge sort and paginator events
+    merge(this.sort.sortChange, this.paginator.page)
+      .pipe(startWith({}), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.loadArticles());
   }
 
   loadArticles() {
     this.isLoading = true;
     this.articleService
-      .getArticles()
+      .getArticles(
+        this.paginator?.pageIndex + 1,
+        this.paginator?.pageSize,
+        this.search
+      )
       .pipe(
-        finalize(() => (this.isLoading = false)) // Ensure loading is turned off on complete or error
+        finalize(() => (this.isLoading = false))
       )
       .subscribe({
-        next: (data) => {
-          this.dataSource.data = data as Article[];
+        next: (data: PaginatedArticles) => {
+          this.dataSource.data = data.data;
+          this.totalArticles = data.pagination.totalItems;
         },
         error: (err) => {
           console.error('Error fetching articles:', err);
-          // Optionally, display an error message to the user
         },
       });
   }
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.searchSubject.next(filterValue.trim().toLowerCase());
+  }
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage(); // Go back to the first page on filter
-    }
+  triggerSearch() {
+    this.loadArticles();
   }
 
   openArticleDetails(article: Article) {

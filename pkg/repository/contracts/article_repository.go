@@ -18,6 +18,7 @@ type ArticleRepository interface {
 	GetWithRelations(id uuid.UUID) (*db.Article, error)
 	GetAllWithRelations() ([]db.Article, error)
 	GetAllWithRelationsPaginated(limit, offset int) ([]db.Article, int64, error)
+	GetAllWithRelationsPaginatedAndSearch(limit, offset int, search string) ([]db.Article, int64, error)
 	CreateWithTransaction(tx *gorm.DB, article *db.Article) error
 	CreateWithAssociations(article *db.Article) error
 	CreateWithAssociationsAndTransaction(tx *gorm.DB, article *db.Article) error

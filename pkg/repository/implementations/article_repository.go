@@ -78,6 +78,37 @@ func (r *articleRepository) GetAllWithRelationsPaginated(limit, offset int) ([]d
 	return articles, total, err
 }
 
+func (r *articleRepository) GetAllWithRelationsPaginatedAndSearch(limit, offset int, search string) ([]db.Article, int64, error) {
+	var articles []db.Article
+	var total int64
+
+	query := r.db.Model(&db.Article{})
+
+	// Apply search filter if provided
+	if search != "" {
+		searchPattern := "%" + search + "%"
+		query = query.Joins("LEFT JOIN sources ON articles.source_id = sources.id").
+			Where("LOWER(articles.title) LIKE LOWER(?) OR LOWER(sources.name) LIKE LOWER(?)", searchPattern, searchPattern)
+	}
+
+	// Count total articles with search filter
+	if err := query.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// Get paginated articles with relations and search filter
+	err := query.Preload("Source").
+		Preload("Region").
+		Preload("Images").
+		Preload("Categories").
+		Order("articles.created_at DESC").
+		Limit(limit).
+		Offset(offset).
+		Find(&articles).Error
+
+	return articles, total, err
+}
+
 func (r *articleRepository) Update(id uuid.UUID, updates map[string]any) error {
 	return r.db.Model(&db.Article{}).Where("id = ?", id).Updates(updates).Error
 }

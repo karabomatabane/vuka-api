@@ -69,9 +69,19 @@ export class ArticleEditComponent implements OnInit {
   save() {
     if (this.editForm.valid) {
       this.isLoading = true;
-      const updatedArticle = { ...this.article, ...this.editForm.value };
+      const formValue = this.editForm.value;
+      
+      // Only send the fields that should be updated
+      const updates = {
+        title: formValue.title,
+        summary: formValue.summary,
+        contentBody: formValue.contentBody,
+        isFeatured: formValue.isFeatured,
+        categoryIds: formValue.categoryIds
+      };
+      
       this.articleService
-        .updateArticle(this.articleId, updatedArticle)
+        .updateArticle(this.articleId, updates)
         .subscribe(() => {
           this.router.navigate(['/articles', this.articleId]);
         });

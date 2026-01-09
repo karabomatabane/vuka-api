@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vuka Newsletter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #007bff;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #007bff;
+            margin: 0;
+            font-size: 28px;
+        }
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .article {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .article:last-child {
+            border-bottom: none;
+        }
+        .article h2 {
+            color: #007bff;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .article .meta {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .article .summary {
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .article .read-more {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .article .read-more:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Vuka Newsletter</h1>
+            <p style="margin: 10px 0 0 0; color: #888;">{{.Date}}</p>
+        </div>
+
+        <div class="greeting">
+            Hello {{.SubscriberName}},
+        </div>
+
+        <p>Here are the latest featured articles from Vuka:</p>
+
+        {{range .Articles}}
+        <div class="article">
+            <h2>{{.Title}}</h2>
+            <div class="meta">
+                {{if .Source}}By {{.Source.Name}} • {{end}}
+                {{.PublishedAt.Format "January 2, 2006"}}
+            </div>
+            {{if .Summary}}
+            <div class="summary">
+                {{.Summary}}
+            </div>
+            {{end}}
+            {{if .OriginalUrl}}
+            <a href="{{.OriginalUrl}}" class="read-more">Read More</a>
+            {{end}}
+        </div>
+        {{end}}
+
+        <div class="footer">
+            <p>You're receiving this email because you subscribed to Vuka Newsletter.</p>
+            <p>
+                <a href="#">Unsubscribe</a> | 
+                <a href="#">Update Preferences</a>
+            </p>
+            <p>&copy; {{.Year}} Vuka. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

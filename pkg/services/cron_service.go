@@ -9,19 +9,21 @@ import (
 )
 
 type CronService struct {
-	cron          *cron.Cron
-	rssService    *RssService
-	sourceService *SourceService
+	cron              *cron.Cron
+	rssService        *RssService
+	sourceService     *SourceService
+	newsletterService *NewsletterService
 }
 
-func NewCronService(rssService *RssService, sourceService *SourceService) *CronService {
+func NewCronService(rssService *RssService, sourceService *SourceService, newsletterService *NewsletterService) *CronService {
 	// Create cron with second precision and logging
 	c := cron.New(cron.WithSeconds(), cron.WithLogger(cron.VerbosePrintfLogger(log.New(log.Writer(), "CRON: ", log.LstdFlags))))
 
 	return &CronService{
-		cron:          c,
-		rssService:    rssService,
-		sourceService: sourceService,
+		cron:              c,
+		rssService:        rssService,
+		sourceService:     sourceService,
+		newsletterService: newsletterService,
 	}
 }
 
@@ -109,4 +111,95 @@ func (s *CronService) ingestAllRSSFeeds() {
 func (s *CronService) TriggerRSSIngestionNow() {
 	log.Println("Manually triggering RSS feed ingestion...")
 	go s.ingestAllRSSFeeds()
+}
+
+// ScheduleNewsletterWeekly schedules newsletter to be sent weekly
+func (s *CronService) ScheduleNewsletterWeekly(dayOfWeek time.Weekday, hour, minute int) error {
+	// Cron day of week: 0 = Sunday, 6 = Saturday
+	cronSpec := fmt.Sprintf("0 %d %d * * %d", minute, hour, dayOfWeek)
+	_, err := s.cron.AddFunc(cronSpec, s.sendWeeklyNewsletter)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Weekly newsletter scheduled for %s at %02d:%02d", dayOfWeek.String(), hour, minute)
+	return nil
+}
+
+// ScheduleNewsletterDaily schedules newsletter to be sent daily
+func (s *CronService) ScheduleNewsletterDaily(hour, minute int) error {
+	cronSpec := fmt.Sprintf("0 %d %d * * *", minute, hour)
+	_, err := s.cron.AddFunc(cronSpec, s.sendDailyNewsletter)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Daily newsletter scheduled at %02d:%02d", hour, minute)
+	return nil
+}
+
+// ScheduleNewsletterMonthly schedules newsletter to be sent monthly on a specific day
+func (s *CronService) ScheduleNewsletterMonthly(dayOfMonth, hour, minute int) error {
+	cronSpec := fmt.Sprintf("0 %d %d %d * *", minute, hour, dayOfMonth)
+	_, err := s.cron.AddFunc(cronSpec, s.sendMonthlyNewsletter)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Monthly newsletter scheduled for day %d at %02d:%02d", dayOfMonth, hour, minute)
+	return nil
+}
+
+// sendWeeklyNewsletter sends the weekly newsletter with featured articles
+func (s *CronService) sendWeeklyNewsletter() {
+	log.Println("Starting scheduled weekly newsletter...")
+	start := time.Now()
+
+	subject := fmt.Sprintf("Vuka Weekly Newsletter - %s", time.Now().Format("January 2, 2006"))
+	err := s.newsletterService.SendNewsletterWithLatestArticles(subject, 10)
+	if err != nil {
+		log.Printf("Failed to send weekly newsletter: %v", err)
+		return
+	}
+
+	duration := time.Since(start)
+	log.Printf("Weekly newsletter sent successfully in %v", duration)
+}
+
+// sendDailyNewsletter sends the daily newsletter with featured articles
+func (s *CronService) sendDailyNewsletter() {
+	log.Println("Starting scheduled daily newsletter...")
+	start := time.Now()
+
+	subject := fmt.Sprintf("Vuka Daily Newsletter - %s", time.Now().Format("January 2, 2006"))
+	err := s.newsletterService.SendNewsletterWithLatestArticles(subject, 5)
+	if err != nil {
+		log.Printf("Failed to send daily newsletter: %v", err)
+		return
+	}
+
+	duration := time.Since(start)
+	log.Printf("Daily newsletter sent successfully in %v", duration)
+}
+
+// sendMonthlyNewsletter sends the monthly newsletter with featured articles
+func (s *CronService) sendMonthlyNewsletter() {
+	log.Println("Starting scheduled monthly newsletter...")
+	start := time.Now()
+
+	subject := fmt.Sprintf("Vuka Monthly Newsletter - %s", time.Now().Format("January 2006"))
+	err := s.newsletterService.SendNewsletterWithLatestArticles(subject, 20)
+	if err != nil {
+		log.Printf("Failed to send monthly newsletter: %v", err)
+		return
+	}
+
+	duration := time.Since(start)
+	log.Printf("Monthly newsletter sent successfully in %v", duration)
+}
+
+// TriggerNewsletterNow manually triggers newsletter sending
+func (s *CronService) TriggerNewsletterNow(subject string, articleLimit int) error {
+	log.Println("Manually triggering newsletter...")
+	return s.newsletterService.SendNewsletterWithLatestArticles(subject, articleLimit)
 }
