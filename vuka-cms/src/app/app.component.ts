@@ -25,7 +25,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 })
 export class AppComponent {
   title = 'Vuka CMS';
-  collapsed = signal(false);
+  private readonly mobileBreakpoint = 768;
+  collapsed = signal(this.isMobileViewport());
   isDarkTheme = signal(true);
 
   constructor(private titleService: Title) {
@@ -50,5 +51,9 @@ export class AppComponent {
     } else {
       document.body.classList.remove('dark-theme');
     }
+  }
+
+  private isMobileViewport(): boolean {
+    return typeof window !== 'undefined' && window.innerWidth <= this.mobileBreakpoint;
   }
 }
