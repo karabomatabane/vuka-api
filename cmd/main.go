@@ -6,6 +6,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
+	"path/filepath"
+	"strings"
 	"vuka-api/pkg/config"
 	"vuka-api/pkg/models/db"
 	"vuka-api/pkg/routes"
@@ -56,16 +59,10 @@ func main() {
 	router := mux.NewRouter()
 	serviceManager := services.NewServices(config.GetDB())
 
-	routes.RegisterAuthRoutes(router)
-	routes.RegisterUserRoutes(router)
-	routes.RegisterArticleRoutes(router)
-	routes.RegisterRoleRoutes(router)
-	routes.RegisterSourceRoutes(router)
-	routes.RegisterCategoryRoutes(router)
-	routes.RegisterDirectoryRoutes(router)
-	routes.RegisterPermissionRoutes(router)
-	routes.RegisterNewsletterRoutes(router)
-	routes.RegisterPostmanRoutes(router)
+	registerAPIRoutes(router.PathPrefix("/api").Subrouter())
+
+	// Serve SPA assets from wwwroot and fall back to index.html for client-side routes.
+	registerStaticSPARoutes(router, "wwwroot")
 
 	// Migrate sources from CSV on startup
 	// MigrateSources(serviceManager.Source, "bin/sources.csv")
@@ -102,7 +99,12 @@ func main() {
 	}
 
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:4200"},
+		AllowedOrigins: []string{
+			"http://localhost:3000",
+			"http://localhost:4200",
+			"https://vuka.news",
+			"https://www.vuka.news",
+		},
 
 		AllowedMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 
@@ -115,4 +117,38 @@ func main() {
 	listeningAddr := fmt.Sprintf("0.0.0.0:%v", os.Getenv("PORT"))
 	log.Printf("Server is running on %s", listeningAddr)
 	log.Fatal(http.ListenAndServe(listeningAddr, c.Handler(router)))
+}
+
+func registerStaticSPARoutes(router *mux.Router, staticDir string) {
+	indexFilePath := filepath.Join(staticDir, "index.html")
+
+	router.PathPrefix("/").Methods(http.MethodGet, http.MethodHead).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestPath := strings.TrimPrefix(path.Clean(r.URL.Path), "/")
+		if requestPath == "." || requestPath == "" {
+			http.ServeFile(w, r, indexFilePath)
+			return
+		}
+
+		candidatePath := filepath.Join(staticDir, requestPath)
+		info, err := os.Stat(candidatePath)
+		if err == nil && !info.IsDir() {
+			http.ServeFile(w, r, candidatePath)
+			return
+		}
+
+		http.ServeFile(w, r, indexFilePath)
+	})
+}
+
+func registerAPIRoutes(router *mux.Router) {
+	routes.RegisterAuthRoutes(router)
+	routes.RegisterUserRoutes(router)
+	routes.RegisterArticleRoutes(router)
+	routes.RegisterRoleRoutes(router)
+	routes.RegisterSourceRoutes(router)
+	routes.RegisterCategoryRoutes(router)
+	routes.RegisterDirectoryRoutes(router)
+	routes.RegisterPermissionRoutes(router)
+	routes.RegisterNewsletterRoutes(router)
+	routes.RegisterPostmanRoutes(router)
 }

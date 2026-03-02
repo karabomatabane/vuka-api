@@ -20,6 +20,13 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: '1.22'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: vuka-cms/package-lock.json
     
     - name: Cache Go modules
       uses: actions/cache@v4
@@ -33,20 +40,34 @@ jobs:
     
     - name: Install dependencies
       run: go mod download
-    
+
+    - name: Install frontend dependencies
+      working-directory: vuka-cms
+      run: npm ci
+
     - name: Build application
       run: |
         CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o vuka-api -ldflags="-s -w" cmd/main.go
         chmod 644 vuka-api
-    
-    - name: Copy binary to server
+
+    - name: Build frontend
+      working-directory: vuka-cms
+      run: npm run build -- --configuration production
+
+    - name: Prepare frontend artifact
+      run: |
+        rm -rf wwwroot
+        mkdir -p wwwroot
+        cp -R vuka-cms/dist/vuka-cms/browser/. wwwroot/
+
+    - name: Copy deploy artifacts to server
       uses: appleboy/scp-action@v0.1.7
       with:
         host: 41.71.36.254
         username: yetu
         key: ${{ secrets.SSH_KEY }}
         port: 2222
-        source: "vuka-api"
+        source: "vuka-api,wwwroot/*"
         target: "/tmp"
         debug: true
     
@@ -70,7 +91,13 @@ jobs:
           echo "${{ secrets.YETU_PASS }}" | sudo -S mv /tmp/vuka-api /opt/vuka/vuka-api
           echo "${{ secrets.YETU_PASS }}" | sudo -S chown yetu:yetu /opt/vuka/vuka-api
           echo "${{ secrets.YETU_PASS }}" | sudo -S chmod 755 /opt/vuka/vuka-api
-          
+
+          # Deploy static frontend
+          echo "${{ secrets.YETU_PASS }}" | sudo -S mkdir -p /opt/vuka/wwwroot
+          echo "${{ secrets.YETU_PASS }}" | sudo -S rm -rf /opt/vuka/wwwroot/*
+          echo "${{ secrets.YETU_PASS }}" | sudo -S cp -R /tmp/wwwroot/. /opt/vuka/wwwroot/
+          echo "${{ secrets.YETU_PASS }}" | sudo -S chown -R yetu:yetu /opt/vuka/wwwroot
+
           # Start the service
           echo "${{ secrets.YETU_PASS }}" | sudo -S systemctl start vuka
           

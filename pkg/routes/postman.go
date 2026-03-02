@@ -12,6 +12,6 @@ func RegisterPostmanRoutes(router *mux.Router) {
 	postmanController := controllers.NewPostmanController(router)
 
 	// Public endpoint to download Postman collection
-	router.HandleFunc("/api/postman/collection", postmanController.GenerateCollection).
+	router.HandleFunc("/postman/collection", postmanController.GenerateCollection).
 		Methods(http.MethodGet)
 }
